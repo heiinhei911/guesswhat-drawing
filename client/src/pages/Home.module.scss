@@ -1,0 +1,46 @@
+@use "../styles/variables" as var;
+
+@include var.container;
+@include var.title;
+@include var.input;
+@include var.button;
+@include var.actions;
+@include var.error;
+
+.home,
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.main {
+  justify-content: space-evenly;
+  align-items: center;
+  width: 80%;
+
+  @include var.mobile {
+    width: 100%;
+  }
+}
+
+.home {
+  padding: 5rem 1rem;
+  justify-content: center;
+  align-items: center;
+
+  @include var.mobile {
+    padding: 1rem;
+  }
+}
+
+// .home-section {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: space-between;
+//   align-items: center;
+// }
+
+.separator {
+  width: 100%;
+}

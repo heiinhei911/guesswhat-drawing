@@ -1,0 +1,22 @@
+@use "../styles/variables" as var;
+
+@include var.button;
+@include var.input;
+@include var.error;
+@include var.container;
+
+.name,
+.error,
+.button {
+  display: block;
+  margin: auto;
+  text-align: center;
+}
+
+.name {
+  margin-top: 1rem;
+}
+
+.button {
+  margin-top: 1rem !important;
+}

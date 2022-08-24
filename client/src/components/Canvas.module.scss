@@ -1,0 +1,32 @@
+@use ".././styles/variables" as var;
+
+.container {
+  touch-action: none;
+  user-select: none;
+}
+
+.canvas {
+  background-color: var.$canvasBkgColor;
+  display: block;
+  margin: auto;
+  width: 100%;
+  // max-width: 500px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  position: relative;
+  cursor: none;
+  border: 1px solid black;
+}
+
+.canvas-cursor {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 5px;
+  // background-color: black;
+  // width: 0.3rem;
+  // height: 0.3rem;
+  &::after {
+    content: "";
+    display: inline-block;
+  }
+}

@@ -1,0 +1,142 @@
+$appBkgColor: #f5f5f5;
+$canvasBkgColor: #fff;
+$chatSelfBkgColor: #007efb;
+$chatOtherBkgColor: #e0dddd;
+$chatSelfTextColor: #ffffff;
+$chatOtherTextColor: #000000;
+$mobileBreakpoint: 576 + px;
+$tabletBreakpoint: 678 + px;
+$laptopBreakpoint: 992 + px;
+$desktopBreakpoint: 1200 + px;
+
+@mixin mobile {
+  @media only screen and (max-width: $mobileBreakpoint) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media only screen and (min-width: $tabletBreakpoint) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media only screen and (min-width: $laptopBreakpoint) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media only screen and (min-width: $desktopBreakpoint) {
+    @content;
+  }
+}
+
+@mixin container {
+  .container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 100%;
+
+    @include mobile {
+      width: 100%;
+    }
+  }
+}
+
+@mixin flexRow {
+  display: flex;
+  flex-direction: row;
+}
+
+@mixin title {
+  .title,
+  .description {
+    text-align: center;
+  }
+
+  .description {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+}
+
+@mixin input {
+  .input {
+    display: block;
+    font-size: 1rem;
+  }
+}
+
+@mixin button {
+  .button {
+    display: block;
+    background-color: darkcyan;
+    color: #ffffff;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: none;
+    padding: 0.5rem 1rem;
+    transition: background-color 500ms;
+    cursor: pointer;
+    width: 50%;
+
+    &:disabled {
+      background-color: rgba(0, 139, 139, 0.5);
+      cursor: default;
+    }
+    &:active,
+    &:focus {
+      background-color: rgba(0, 139, 139, 0.8);
+    }
+  }
+}
+
+@mixin error {
+  .error {
+    display: block;
+    color: red;
+  }
+}
+
+@mixin actions {
+  .actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem 0;
+
+    & > * {
+      margin: 0 1rem;
+      flex: 0 0 8rem;
+    }
+  }
+}
+
+@mixin overlay {
+  .overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(128, 128, 128, 0.8);
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+:export {
+  appBkgColor: $appBkgColor;
+  canvasBkgColor: $canvasBkgColor;
+}

@@ -1,0 +1,89 @@
+@use "../styles/variables" as var;
+
+@include var.container;
+@include var.overlay;
+
+.game {
+  position: relative;
+}
+
+.game-columns {
+  @include var.flexRow;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+
+  &.head {
+    text-align: center;
+  }
+
+  @include var.mobile {
+    flex-direction: column-reverse;
+
+    & > * {
+      width: 100%;
+    }
+
+    &.head {
+      flex-direction: column;
+    }
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-basis: 75%;
+}
+
+// .name-screen {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   height: 100%;
+//   & > * {
+//     margin: 1rem 0;
+//   }
+// }
+
+.canvas-with-toolbar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: darkcyan;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+
+  @include var.tablet {
+    & > :first-child {
+      order: 2;
+    }
+
+    & > :nth-child(2) {
+      order: 1;
+    }
+  }
+}
+
+.chats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+
+  @include var.mobile {
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.word {
+  font-weight: bold;
+  color: darkcyan;
+  text-transform: uppercase;
+}

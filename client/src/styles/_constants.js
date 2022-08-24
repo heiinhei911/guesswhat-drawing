@@ -1,0 +1,5 @@
+const MOBILE_BREAKPOINT = 480;
+const MAX_CANVAS_SIZE = 500;
+const LOBBY = "lobby";
+
+export { MOBILE_BREAKPOINT, MAX_CANVAS_SIZE, LOBBY };

@@ -1,0 +1,47 @@
+@use "../styles/variables" as var;
+
+.canvas-toolbar {
+  @include var.flexRow;
+  justify-content: center;
+  align-items: stretch;
+  padding: 0.5rem 0;
+  flex-wrap: wrap;
+
+  & > li {
+    margin: 0.1rem 0.3rem;
+    border-radius: 5px;
+    padding: 0.1rem;
+    background-color: whitesmoke;
+    flex: 0 0 1.5rem;
+
+    @include var.tablet {
+      margin: 0.5rem;
+    }
+
+    @include var.mobile {
+      margin: 0.5rem 0.25rem;
+    }
+  }
+
+  & > li:first-child {
+    margin-left: 0;
+    flex: 0 0 1.8rem !important;
+  }
+
+  & > li:nth-child(2) {
+    flex: 0 0 12rem;
+  }
+
+  @include var.tablet {
+    flex-wrap: nowrap;
+  }
+}
+
+.icon {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.2rem !important;
+}

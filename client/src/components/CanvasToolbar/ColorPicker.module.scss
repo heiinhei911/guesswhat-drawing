@@ -1,0 +1,49 @@
+@use "../../styles/variables" as var;
+
+.tile {
+  //   background-color: black;
+  border-radius: 5px;
+  display: block;
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.3rem;
+  }
+  cursor: pointer;
+}
+
+.picker {
+  position: relative;
+  //   cursor: pointer;
+}
+
+.menu {
+  margin-top: 0.2rem;
+  // border: 1px solid black;
+  border-radius: 5px;
+  position: absolute;
+  bottom: 100%;
+  padding: 0.2rem 0.5rem;
+  z-index: 25;
+  background-color: whitesmoke;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+}
+
+.menu-list {
+  @include var.flexRow;
+  justify-content: space-evenly;
+  align-items: center;
+
+  & > * {
+    margin: 0 0.3rem;
+  }
+
+  & > :first-child {
+    margin-left: 0;
+  }
+
+  & > :last-child {
+    margin-right: 0;
+  }
+}

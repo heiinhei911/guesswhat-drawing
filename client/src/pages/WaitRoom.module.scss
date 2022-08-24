@@ -1,0 +1,65 @@
+@use "../styles/variables" as var;
+
+@include var.container;
+@include var.title;
+@include var.button;
+// @include var.input;
+// @include var.actions;
+// @include var.error;
+
+.header > .container {
+  @include var.flexRow;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  padding-bottom: 0.1rem;
+  border-bottom: 2px solid lightgray;
+  margin-bottom: 1rem;
+
+  & > div {
+    & > h2 {
+      font-size: 1rem;
+    }
+
+    & > .button {
+      width: 100%;
+      font-size: 0.8rem;
+      padding: 0.25rem;
+    }
+  }
+}
+
+.title {
+  text-align: left;
+}
+
+.container {
+  @include var.flexRow;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  @include var.mobile {
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: flex-start;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.not-exist > .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  & > .button {
+    margin-top: 1rem;
+  }
+}

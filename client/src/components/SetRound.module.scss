@@ -1,0 +1,57 @@
+@use "../styles/variables" as var;
+
+@include var.button;
+@include var.input;
+@include var.actions;
+@include var.error;
+
+.rounds {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem auto;
+}
+
+.settings {
+  background-color: lightgray;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+
+  & > * {
+    margin: 0.5rem 0;
+  }
+
+  & > span:first-child {
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+
+  & input {
+    width: 20%;
+    margin: 0.5rem;
+  }
+}
+
+.round,
+.duration {
+  @include var.flexRow;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+
+  & > span:first-child {
+    flex: 0 0 75%;
+  }
+}
+
+.error {
+  flex-basis: 100%;
+}
+
+.button {
+  flex-grow: 1;
+  flex-basis: 50%;
+  padding: 0.5rem 1rem;
+}
