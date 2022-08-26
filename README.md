@@ -3,7 +3,7 @@
 A word-guessing multiplayer game that challenges players to guess a series of words based on the drawings from other players over multiple rounds
 Each player takes turns guessing or drawing after one another. The player with the highest score at the end of the game wins
 
-Check out my bullet board [https://heiinhei911.github.io/bulletin-board](<(https://heiinhei911.github.io/bulletin-board)>) to see tracked bugs of this project.
+Check out my bullet board [https://heiinhei911.github.io/bulletin-board](https://heiinhei911.github.io/bulletin-board) to see tracked bugs of this project.
 
 ## How to Play
 
