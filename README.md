@@ -3,7 +3,7 @@
 A word-guessing multiplayer game that challenges players to guess a series of words based on the drawings from other players over multiple rounds
 Each player takes turns guessing or drawing after one another. The player with the highest score at the end of the game wins
 
-Check out my bullet board[https://heiinhei911.github.io/bulletin-board](https://heiinhei911.github.io/bulletin-board) to see tracked bugs of this project.
+Check out my bullet board [https://heiinhei911.github.io/bulletin-board](<(https://heiinhei911.github.io/bulletin-board)>) to see tracked bugs of this project.
 
 ## How to Play
 
@@ -17,8 +17,8 @@ Note: the ID of the newly created room will be automatically copied to your clip
 
 If you already have a room ID that somebody else has created, you can either:
 
-- copy the code and paste it into the "Enter a room ID" field and click "Join".
-- Navigate directly to "https://guesswhat-drawing.netlify.app/roomID" to jump straight into a room. (You will be asked to enter a display name if you do not already have a name set).
+- copy the code and paste it into the "Enter a room ID" field and click "Join"
+- Navigate directly to "https://guesswhat-drawing.netlify.app/{roomID}" to jump straight into a room. (You will be asked to enter a display name if you do not already have a name set)
 
 ### Waitroom
 
