@@ -15,7 +15,7 @@ console.log(process.env.REACT_APP_ENV);
 const socket = io(
   process.env.REACT_APP_ENV === "PRODUCTION"
     ? "https://guesswhat-drawing.herokuapp.com"
-    : "http://192.168.68.112:3001",
+    : "http://192.168.68.107:3001",
   {
     // withCredentials: true,
     // extraHeaders: {
