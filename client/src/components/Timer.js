@@ -28,7 +28,6 @@ const Timer = () => {
       if (!roundEnd) {
         setRoundEnd({ type: "timeout" });
       }
-      console.log(roundEnd);
     }
 
     return () => clearInterval(timer);

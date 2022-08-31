@@ -11,7 +11,7 @@ const useRounds = () => useContext(RoundsContext);
 
 const RoundsProvider = ({ children }) => {
   const socket = useSocket();
-  const { room, isCreator, user } = useRoom();
+  const { room, isCreator } = useRoom();
   const navigate = useNavigate();
   const [totalRounds, setTotalRounds] = useState(0);
   const [roundDuration, setRoundDuration] = useState(0);
@@ -22,8 +22,8 @@ const RoundsProvider = ({ children }) => {
   const [wordsList, setWordsList] = useState([]);
   const [turnOrder, setTurnOrder] = useState([]);
   const [word, setWord] = useState({});
-  const [turn, setTurn] = useState("");
-  const isTurn = turn === socket.id;
+  const [turn, setTurn] = useState({});
+  const isTurn = turn.id === socket.id;
 
   useEffect(() => {
     socket.on("receive_start_rounds", (roundWordData) => {

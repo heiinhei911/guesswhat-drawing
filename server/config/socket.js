@@ -5,14 +5,29 @@ const connectSocket = (io) => {
   io.on("connection", (socket) => {
     const getClients = (room) => io.sockets.adapter.rooms.get(room);
 
-    const randomNumberArray = (size, push, type) => {
+    const randomNumberArray = async (size, push, type, room = null) => {
       const array = [];
       while (array.length < size) {
         let r = Math.floor(
           Math.random() * (type === "turn" ? size : push.length)
         );
-        console.log(r);
-        if (array.indexOf(push[r]) === -1) array.push(push[r]);
+        if (array.indexOf(push[r]) === -1) {
+          if (type === "turn") {
+            const sockets = await io.in(room).fetchSockets();
+
+            for (const clientSocket of sockets) {
+              if (clientSocket.id === push[r]) {
+                array.push({
+                  id: push[r],
+                  username: clientSocket.data.username,
+                });
+                break;
+              }
+            }
+          } else {
+            array.push(push[r]);
+          }
+        }
       }
 
       return array;
@@ -29,7 +44,8 @@ const connectSocket = (io) => {
       let randomizedClientsList = randomNumberArray(
         clientsList.length,
         clientsList,
-        "turn"
+        "turn",
+        room
       );
 
       while (Math.abs(rounds - randomizedClientsList.length) > 0) {

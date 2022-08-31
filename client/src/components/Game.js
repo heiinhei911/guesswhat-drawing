@@ -54,22 +54,22 @@ const Game = () => {
       } else if (matchedWordData.type === "left") {
         console.log(`${matchedWordData.user} left the room`);
       } else {
-        console.log(`${matchedWordData.user} time out`);
+        console.log(`${matchedWordData.user} timed out`);
       }
     });
   }, [socket, word]);
 
-  useEffect(() => {
-    console.log("currentround: ", currentRound);
-  }, [currentRound]);
+  // useEffect(() => {
+  //   console.log("currentround: ", currentRound);
+  // }, [currentRound]);
 
-  useEffect(() => {
-    console.log("word: ", word.word);
-  }, [word]);
+  // useEffect(() => {
+  //   console.log("word: ", word.word);
+  // }, [word]);
 
-  useEffect(() => {
-    console.log("turn: ", turn);
-  }, [turn]);
+  // useEffect(() => {
+  //   console.log("turn: ", turn);
+  // }, [turn]);
 
   return (
     <CanvasProvider>
@@ -79,9 +79,13 @@ const Game = () => {
             <span>
               Round {currentRound} of {totalRounds}
             </span>
-            {isTurn && (
+            {isTurn ? (
               <div>
                 Your word: <span className={styles.word}>{word.word}</span>
+              </div>
+            ) : (
+              <div>
+                <span className={styles.word}>{turn.username}</span>'s turn
               </div>
             )}
             <Timer />
