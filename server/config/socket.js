@@ -11,7 +11,7 @@ const connectSocket = (io) => {
         let r = Math.floor(
           Math.random() * (type === "turn" ? size : push.length)
         );
-        if (array.indexOf(push[r]?.id) === -1) {
+        if (array.indexOf(type === "turn" ? push[r].id : push[r]) === -1) {
           if (type === "turn") {
             const sockets = await io.in(room).fetchSockets();
 
