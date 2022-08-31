@@ -15,6 +15,7 @@ const SetRound = () => {
   const [duration, setDuration] = useState(1);
   const [error, setError] = useState("");
   const [beginGameDelay, setBeginGameDelay] = useState(false);
+  const [startGameSeconds, setStartGameSeconds] = useState(5);
 
   useEffect(() => {
     socket.on("update_player_count", (playerCount) => {
@@ -23,7 +24,7 @@ const SetRound = () => {
 
     socket.on("receive_stop_game", () => {
       setBeginGameDelay(false);
-      // // clearTimeout(startGameTimer);
+      // // clearTimeout(startGameDelay);
       // setBeginGame(false);
     });
 
@@ -40,15 +41,25 @@ const SetRound = () => {
   }, [minRounds]);
 
   useEffect(() => {
+    let startGameDelay = null;
     let startGameTimer = null;
     if (beginGameDelay) {
-      startGameTimer = setTimeout(() => {
+      startGameTimer = setInterval(() => {
+        setStartGameSeconds((prevSeconds) => prevSeconds - 1);
+      }, 1000);
+      startGameDelay = setTimeout(() => {
         setBeginGame(true);
       }, 5000);
     } else {
-      clearTimeout(startGameTimer);
+      clearTimeout(startGameDelay);
+      clearInterval(startGameTimer);
+      setStartGameSeconds(5);
     }
-    return () => clearTimeout(startGameTimer);
+    return () => {
+      clearTimeout(startGameDelay);
+      clearInterval(startGameTimer);
+      setStartGameSeconds(5);
+    };
   }, [beginGameDelay]);
 
   const startGame = () => {
@@ -126,7 +137,9 @@ const SetRound = () => {
       )}
 
       {beginGameDelay
-        ? "Game is starting in 5 secs"
+        ? `Game is starting in ${startGameSeconds} second${
+            startGameSeconds > 1 ? "s" : ""
+          }`
         : !isCreator &&
           !beginGameDelay &&
           "Waiting for the creator to start the game..."}
@@ -143,7 +156,7 @@ const SetRound = () => {
         </div>
       )}
       {isCreator && minRounds < 2 && (
-        <span>Invite one more person to start the game!</span>
+        <span>Invite one more player to start the game!</span>
       )}
     </div>
   );

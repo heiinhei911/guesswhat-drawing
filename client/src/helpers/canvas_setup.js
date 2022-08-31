@@ -37,8 +37,8 @@ const startDrawing = (
   id,
   sendScaleIndex = 1
 ) => {
-  console.log(e.target.offsetTop);
   const { x, y } = getClickCoords(e);
+  // if (e.defaultPrevented === false) e.preventDefault();
 
   setIsDrawing(true);
   ctxRef.current.beginPath();
@@ -57,6 +57,8 @@ const finishDrawing = (e, send, ctxRef, setIsDrawing, socket, id) => {
 
 const draw = (e, send, ctxRef, socket, id, sendScaleIndex = 1) => {
   const { x, y } = getClickCoords(e);
+
+  // if (e.defaultPrevented === false) e.preventDefault();
   ctxRef.current.lineTo(x * sendScaleIndex, y * sendScaleIndex);
   ctxRef.current.stroke();
 

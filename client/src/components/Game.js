@@ -90,7 +90,7 @@ const Game = () => {
             <div className={styles.content}>
               <div className={styles["canvas-with-toolbar"]}>
                 <Canvas />
-                <CanvasToolbar />
+                {isTurn && <CanvasToolbar />}
               </div>
             </div>
             <PlayerList />
@@ -105,14 +105,14 @@ const Game = () => {
         <div className={styles.overlay}>
           <h2>
             {roundEnd.type === "guessed"
-              ? "Game Over!"
+              ? "Round Over!"
               : roundEnd.type === "left"
               ? "Player Left"
               : "Time Out!"}
           </h2>
           {roundEnd.type === "guessed" && (
             <p>
-              {roundEnd.yser} guessed the word "{word.word}"
+              {roundEnd.user} guessed the word "{word.word}"
             </p>
           )}
         </div>

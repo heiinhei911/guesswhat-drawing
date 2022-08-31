@@ -38,7 +38,7 @@ const Chat = ({ type, check = false }) => {
   }, [socket]);
 
   useEffect(() => {
-    chatRef.current.scrollIntoView({ behaviour: "smooth" });
+    chatRef.current.scrollTop = chatRef.current.scrollHeight;
   }, [messageList]);
 
   const checkMessage = () => {
@@ -113,9 +113,8 @@ const Chat = ({ type, check = false }) => {
   return (
     <div className={styles.chat}>
       <span>{type === "guesses" ? "Guesses" : "Chat Room"}</span>
-      <div className={styles.messages}>
+      <div className={styles.messages} ref={chatRef}>
         {messageDisplay}
-        <div ref={chatRef}></div>
       </div>
       <form className={styles["chat-input"]} onSubmit={(e) => sendMessage(e)}>
         <input

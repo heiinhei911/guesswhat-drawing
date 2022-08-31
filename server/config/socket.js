@@ -5,10 +5,13 @@ const connectSocket = (io) => {
   io.on("connection", (socket) => {
     const getClients = (room) => io.sockets.adapter.rooms.get(room);
 
-    const randomNumberArray = (size, push) => {
+    const randomNumberArray = (size, push, type) => {
       const array = [];
       while (array.length < size) {
-        let r = Math.floor(Math.random() * size);
+        let r = Math.floor(
+          Math.random() * (type === "turn" ? size : push.length)
+        );
+        console.log(r);
         if (array.indexOf(push[r]) === -1) array.push(push[r]);
       }
 
@@ -25,7 +28,8 @@ const connectSocket = (io) => {
 
       let randomizedClientsList = randomNumberArray(
         clientsList.length,
-        clientsList
+        clientsList,
+        "turn"
       );
 
       while (Math.abs(rounds - randomizedClientsList.length) > 0) {
@@ -49,11 +53,11 @@ const connectSocket = (io) => {
         const res = await axios.get(
           process.env.ENV === "PRODUCTION"
             ? "https://guesswhat-drawing.herokuapp.com/api/words"
-            : "http://192.168.68.112:3001/api/words"
+            : "http://192.168.68.107:3001/api/words"
         );
         const allWords = res.data;
 
-        return randomNumberArray(rounds, allWords);
+        return randomNumberArray(rounds, allWords, "words");
       } catch (err) {
         console.log(err);
       }
