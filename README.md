@@ -5,7 +5,7 @@ Each player takes turns guessing or drawing after one another. The player with t
 
 Check out my bullet board [https://heiinhei911.github.io/bulletin-board](https://heiinhei911.github.io/bulletin-board) to see tracked bugs of this project.
 
-![Demo GIF](./assets/../../src/assets/demo.gif)
+![Demo GIF](./client/assets/demo.gif)
 
 ## How to Play
 
