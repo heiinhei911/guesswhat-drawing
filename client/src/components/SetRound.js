@@ -156,7 +156,11 @@ const SetRound = () => {
         </div>
       )}
       {isCreator && minRounds < 2 && (
-        <span>Invite one more player to start the game!</span>
+        <div>
+          <span>The Room ID has been copied to your clipboard</span>
+          <br></br>
+          <span>Invite one more player to start the game!</span>
+        </div>
       )}
     </div>
   );

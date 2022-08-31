@@ -11,7 +11,7 @@ const connectSocket = (io) => {
         let r = Math.floor(
           Math.random() * (type === "turn" ? size : push.length)
         );
-        if (array.indexOf(push[r]) === -1) {
+        if (array.indexOf(push[r]?.id) === -1) {
           if (type === "turn") {
             const sockets = await io.in(room).fetchSockets();
 
@@ -41,7 +41,7 @@ const connectSocket = (io) => {
         clientsList.push(clientSocket.id);
       }
 
-      let randomizedClientsList = randomNumberArray(
+      let randomizedClientsList = await randomNumberArray(
         clientsList.length,
         clientsList,
         "turn",
@@ -73,7 +73,7 @@ const connectSocket = (io) => {
         );
         const allWords = res.data;
 
-        return randomNumberArray(rounds, allWords, "words");
+        return await randomNumberArray(rounds, allWords, "words");
       } catch (err) {
         console.log(err);
       }

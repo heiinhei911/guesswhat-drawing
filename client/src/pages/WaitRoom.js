@@ -11,6 +11,7 @@ import Chat from "../components/Chat";
 import SetRound from "../components/SetRound";
 import styles from "./WaitRoom.module.scss";
 import { LOBBY } from "../styles/_constants";
+import EndScreen from "../components/EndScreen";
 
 const WaitRoom = ({ setId }) => {
   const socket = useSocket();
@@ -18,7 +19,7 @@ const WaitRoom = ({ setId }) => {
   const { user } = useName();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { beginGame } = useRounds();
+  const { beginGame, endScreen } = useRounds();
   const fromHome = state?.fromHome || false;
   const [roomChecked, setRoomChecked] = useState(null);
 
@@ -51,9 +52,9 @@ const WaitRoom = ({ setId }) => {
   }, [socket]);
 
   const returnHome = () => {
-    navigate("/");
     leaveRoom(socket, id);
     joinRoom(socket, LOBBY);
+    navigate("/");
   };
 
   return (
@@ -73,7 +74,9 @@ const WaitRoom = ({ setId }) => {
           </div>
         </div>
       </div>
-      {beginGame ? (
+      {endScreen ? (
+        <EndScreen returnHome={returnHome} />
+      ) : beginGame ? (
         <Game />
       ) : !roomChecked ? (
         <div className={styles["not-exist"]}>

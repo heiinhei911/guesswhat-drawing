@@ -1,0 +1,6 @@
+@use "../styles/variables" as var;
+
+@include var.container;
+@include var.button;
+@include var.actions;
+@include var.title;

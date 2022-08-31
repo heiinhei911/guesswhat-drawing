@@ -1,9 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useRoom } from "./RoomContext";
 import { useSocket } from "./SocketContext";
-import { joinRoom, leaveRoom } from "../helpers/socket_functions";
-import { LOBBY } from "../styles/_constants";
 
 const RoundsContext = createContext();
 
@@ -12,12 +9,12 @@ const useRounds = () => useContext(RoundsContext);
 const RoundsProvider = ({ children }) => {
   const socket = useSocket();
   const { room, isCreator } = useRoom();
-  const navigate = useNavigate();
   const [totalRounds, setTotalRounds] = useState(0);
   const [roundDuration, setRoundDuration] = useState(0);
   const [currentRound, setCurrentRound] = useState(0);
   const [beginGame, setBeginGame] = useState(false);
   const [roundEnd, setRoundEnd] = useState(false);
+  const [endScreen, setEndScreen] = useState(false);
 
   const [wordsList, setWordsList] = useState([]);
   const [turnOrder, setTurnOrder] = useState([]);
@@ -51,9 +48,7 @@ const RoundsProvider = ({ children }) => {
         setTimeout(() => {
           setRoundEnd(true);
           setBeginGame(false);
-          leaveRoom(socket, room);
-          joinRoom(socket, LOBBY);
-          navigate("/");
+          setEndScreen(true);
         }, 5000);
       }
     }
@@ -73,8 +68,6 @@ const RoundsProvider = ({ children }) => {
       // socket.emit("send_start_rounds", { room, usedWords });
       setWord(wordsList[currentRound - 1]);
       setTurn(turnOrder[currentRound - 1]);
-      console.log("word:", word);
-      console.log("turn:", turn);
     }
   }, [currentRound, wordsList, turnOrder]);
 
@@ -94,6 +87,8 @@ const RoundsProvider = ({ children }) => {
     setBeginGame,
     roundEnd,
     setRoundEnd,
+    endScreen,
+    setEndScreen,
     updateRoundsInfo,
     word,
     turn,
