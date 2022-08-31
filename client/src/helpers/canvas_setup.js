@@ -90,13 +90,7 @@ const getClickCoords = (e) => {
 
   if (e.type === "touchstart" || e.type === "touchmove") {
     const { pageX, pageY } = e.nativeEvent.changedTouches[0];
-    console.log(
-      "pagex,pagey,offsetLeft,offsetTop",
-      pageX,
-      pageY,
-      e.target.offsetLeft,
-      e.target.offsetTop
-    );
+
     coords = {
       x: (pageX - e.target.offsetLeft) * scaleIndex,
       y: (pageY - e.target.offsetTop) * scaleIndex,
