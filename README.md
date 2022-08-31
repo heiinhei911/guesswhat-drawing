@@ -5,6 +5,8 @@ Each player takes turns guessing or drawing after one another. The player with t
 
 Check out my bullet board [https://heiinhei911.github.io/bulletin-board](https://heiinhei911.github.io/bulletin-board) to see tracked bugs of this project.
 
+![Demo GIF](./assets/../../src/assets/demo.gif)
+
 ## How to Play
 
 Firstly, start off by navigating to the website. Once the page has loaded, you can enter your name in the "Enter your name:" field. After that, you can either create or join a room.
