@@ -5,7 +5,7 @@ const connectSocket = (io) => {
   io.on("connection", (socket) => {
     const getClients = (room) => io.sockets.adapter.rooms.get(room);
 
-    const randomNumberArray = async (size, push, type, room = null) => {
+    const randomNumberArray = async (size, push, type) => {
       const array = [];
       while (array.length < size) {
         let r = Math.floor(
@@ -34,8 +34,7 @@ const connectSocket = (io) => {
       let randomizedClientsList = await randomNumberArray(
         clientsList.length,
         clientsList,
-        "turn",
-        room
+        "turn"
       );
 
       while (Math.abs(rounds - randomizedClientsList.length) > 0) {
