@@ -3,13 +3,16 @@ import { useSocket } from "../contexts/SocketContext";
 import { nanoid } from "nanoid";
 import styles from "./PlayerList.module.scss";
 import { useRoom } from "../contexts/RoomContext";
+import { useRounds } from "../contexts/RoundContext";
 
 const PlayerList = ({ type }) => {
   const socket = useSocket();
+  const { endScreen } = useRounds();
   const { room, creatorId } = useRoom();
   const [playerCount, setPlayerCount] = useState(0);
   const [players, setPlayers] = useState([]);
   const [highest, setHighest] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     socket.emit("get_players", room);
@@ -20,19 +23,22 @@ const PlayerList = ({ type }) => {
       setPlayerCount(clientsData.total);
       setPlayers(clientsData.clients);
 
-      console.log(clientsData.clients[0].score);
-
       if (clientsData.clients[0].score) {
         clientsData.clients.forEach((client) => {
-          if (highest.length === 0) {
+          setLoading(true);
+          if (highest.length === 0 || client.score > highest[0].score) {
             setHighest([client]);
-          } else {
-            if (client.score > highest[0].score) {
-              setHighest([client]);
-            } else if (client.score === highest[0].score) {
-              setHighest((prevHighest) => [...prevHighest, client]);
+          } else if (client.score === highest[0].score) {
+            let found = false;
+            for (const player of highest) {
+              if (player.id === client.id) {
+                found = true;
+                break;
+              }
             }
+            if (!found) setHighest((prevHighest) => [...prevHighest, client]);
           }
+          setLoading(false);
         });
       }
     };
@@ -44,7 +50,7 @@ const PlayerList = ({ type }) => {
     // socket.on("leave_room", (id) => {
     //   console.log(`${id} left the room`);
     // });
-  }, [socket]);
+  }, [socket, highest]);
 
   const PlayerList = players.map((player) => (
     <li key={nanoid()}>
@@ -59,9 +65,9 @@ const PlayerList = ({ type }) => {
 
   return (
     <>
-      {type === "finalscore" && (
+      {endScreen && !loading && (
         <h3 className={styles.winner}>
-          {console.log(highest)}
+          {console.log("display highest ", highest)}
           {highest.length > 1
             ? "It's a tie!"
             : `The winner is ${highest[0].username}`}
