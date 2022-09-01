@@ -96,7 +96,7 @@ const WaitRoom = ({ setId }) => {
               <Chat type="chat" />
               <SetRound />
             </div>
-            <PlayerList />
+            <PlayerList type="player" />
           </div>
         </div>
       )}

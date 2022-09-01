@@ -4,3 +4,9 @@
 @include var.button;
 @include var.actions;
 @include var.title;
+
+.scoreboard {
+  display: block;
+  margin: 1rem auto;
+  max-width: 500px;
+}

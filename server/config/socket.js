@@ -5,6 +5,10 @@ const connectSocket = (io) => {
   io.on("connection", (socket) => {
     const getClients = (room) => io.sockets.adapter.rooms.get(room);
 
+    const removePlayerRoomScore = (room) => {
+      delete socket.data[room];
+    };
+
     const randomNumberArray = async (size, push, type) => {
       const array = [];
       while (array.length < size) {
@@ -77,6 +81,10 @@ const connectSocket = (io) => {
         const clientObj = {
           id: clientSocket.id,
           username: clientSocket.data.username,
+          score:
+            typeof clientSocket.data[room] === "number"
+              ? clientSocket.data[room]
+              : null,
         };
 
         if (removeSelf) {
@@ -141,6 +149,8 @@ const connectSocket = (io) => {
       socket.leave(room);
       updatePlayerList(room);
       io.in(room).emit("update_player_count", getClients(room)?.size);
+
+      removePlayerRoomScore(room);
       console.log(`User ${socket.id} left ${room}`);
     });
 
@@ -158,6 +168,7 @@ const connectSocket = (io) => {
     });
 
     socket.on("send_start_rounds", async (startRoundsData) => {
+      // Get turnsOrder and roundWords
       const order = await getTurnsOrder(
         startRoundsData.room,
         startRoundsData.totalRounds
@@ -166,6 +177,14 @@ const connectSocket = (io) => {
 
       console.log(order);
       console.log(words);
+
+      // Create score variable in room
+      const sockets = await io.in(startRoundsData.room).fetchSockets();
+
+      for (const clientSocket of sockets) {
+        clientSocket.data[startRoundsData.room] = 0;
+        console.log(clientSocket.data);
+      }
 
       io.in(startRoundsData.room).emit("receive_start_rounds", {
         room: startRoundsData.room,
@@ -176,6 +195,23 @@ const connectSocket = (io) => {
 
     // End of Round Types --------------------------
     socket.on("matched_word", (matchedWordData) => {
+      const updatePlayersScore = async () => {
+        const sockets = await io.in(matchedWordData.room).fetchSockets();
+
+        for (const clientSocket of sockets) {
+          let score = clientSocket.data[matchedWordData.room];
+          if (clientSocket.id === matchedWordData.turn) {
+            score = score + parseInt(process.env.DRAWER_POINT);
+          } else if (clientSocket.id === socket.id) {
+            score = score + parseInt(process.env.GUESSER_POINT);
+          }
+          clientSocket.data[matchedWordData.room] = score;
+          console.log(clientSocket.data[matchedWordData.room]);
+        }
+      };
+      updatePlayersScore();
+      updatePlayerList(matchedWordData.room);
+
       io.in(matchedWordData.room).emit("end_of_round", matchedWordData);
     });
 
@@ -216,6 +252,8 @@ const connectSocket = (io) => {
       for (const room of socket.rooms) {
         updatePlayerList(room, true);
         io.in(room).emit("update_player_count", getClients(room)?.size - 1);
+
+        removePlayerRoomScore(room);
       }
     });
 

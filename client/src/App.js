@@ -38,22 +38,6 @@ const App = () => {
       );
   }, []);
 
-  // useEffect(() => {
-  //   const positionUpdate = (e) => {
-  //     // console.log(e);
-  //     setMousePosX(e.x);
-  //     setMousePosY(e.y);
-  //   };
-
-  //   window.addEventListener("mousemove", positionUpdate);
-  //   window.addEventListener("touchmove", positionUpdate);
-
-  //   return () => {
-  //     window.removeEventListener("mousemove", positionUpdate);
-  //     window.removeEventListener("touchmove", positionUpdate);
-  //   };
-  // }, []);
-
   return (
     <SocketProvider socket={socket}>
       <NameProvider>

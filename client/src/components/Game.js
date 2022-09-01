@@ -8,7 +8,7 @@ import CanvasToolbar from "../components/CanvasToolbar";
 import Chat from "../components/Chat";
 import Timer from "../components/Timer";
 import styles from "./Game.module.scss";
-import PlayerList from "../components/PlayerList";
+import PlayerList from "./PlayerList";
 import { useName } from "../contexts/NameContext";
 import { useRoom } from "../contexts/RoomContext";
 
@@ -97,7 +97,7 @@ const Game = () => {
                 {isTurn && <CanvasToolbar />}
               </div>
             </div>
-            <PlayerList />
+            <PlayerList type="score" />
           </div>
           <div className={styles.chats}>
             <Chat check={true} type="guesses" />

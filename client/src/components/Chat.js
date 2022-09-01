@@ -23,7 +23,7 @@ const Chat = ({ type, check = false }) => {
   const socket = useSocket();
   const { room } = useRoom();
   const { user } = useName();
-  const { currentRound, word, isTurn } = useRounds();
+  const { currentRound, word, isTurn, turn } = useRounds();
   const [message, setMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
   const chatRef = useRef(null);
@@ -46,6 +46,7 @@ const Chat = ({ type, check = false }) => {
       const matchedWordData = {
         room,
         user,
+        turn: turn.id,
         type: "guessed",
       };
       socket.emit("matched_word", matchedWordData);
