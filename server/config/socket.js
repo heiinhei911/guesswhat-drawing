@@ -206,7 +206,6 @@ const connectSocket = (io) => {
             score = score + parseInt(process.env.GUESSER_POINT);
           }
           clientSocket.data[matchedWordData.room] = score;
-          console.log(clientSocket.data[matchedWordData.room]);
         }
       };
       updatePlayersScore();
@@ -217,6 +216,44 @@ const connectSocket = (io) => {
 
     socket.on("player_left", (playerData) => {
       io.in(playerData.room).emit("end_of_round", playerData);
+    });
+
+    socket.on("send_calculate_score", async (room) => {
+      const calculatePlayerScore = async () => {
+        const sockets = await io.in(room).fetchSockets();
+        let highest = [{ id: "", score: 0 }];
+
+        for (const clientSocket of sockets) {
+          const clientScore = clientSocket.data[room];
+          if (clientScore > highest[0].score) {
+            highest = [
+              {
+                id: clientSocket.id,
+                username: clientSocket.data.username,
+                score: clientScore,
+              },
+            ];
+          } else if (clientScore === highest[0].score) {
+            let found = false;
+            for (let i = 1; i < highest.length; i++) {
+              if (highest[i].id === clientSocket.id) {
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
+              highest.push({
+                id: clientSocket.id,
+                username: clientSocket.data.username,
+                score: clientScore,
+              });
+            }
+          }
+        }
+        return highest;
+      };
+
+      io.in(room).emit("receive_calculate_score", await calculatePlayerScore());
     });
 
     // Canvas Drawing -------------------------------

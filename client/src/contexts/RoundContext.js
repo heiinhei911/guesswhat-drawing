@@ -44,6 +44,7 @@ const RoundsProvider = ({ children }) => {
           setCurrentRound((prevRound) => prevRound + 1);
         }, 5000);
       } else {
+        socket.emit("send_calculate_score", room);
         // Game Ends
         setTimeout(() => {
           setRoundEnd(true);

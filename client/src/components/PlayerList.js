@@ -23,34 +23,43 @@ const PlayerList = ({ type }) => {
       setPlayerCount(clientsData.total);
       setPlayers(clientsData.clients);
 
-      if (clientsData.clients[0].score) {
-        clientsData.clients.forEach((client) => {
-          setLoading(true);
-          if (highest.length === 0 || client.score > highest[0].score) {
-            setHighest([client]);
-          } else if (client.score === highest[0].score) {
-            let found = false;
-            for (const player of highest) {
-              if (player.id === client.id) {
-                found = true;
-                break;
-              }
-            }
-            if (!found) setHighest((prevHighest) => [...prevHighest, client]);
-          }
-          setLoading(false);
-        });
-      }
+      // if (clientsData.clients[0].score) {
+      //   clientsData.clients.forEach((client) => {
+      //     setLoading(true);
+      //     if (highest.length === 0 || client.score > highest[0].score) {
+      //       setHighest([client]);
+      //     } else if (client.score === highest[0].score) {
+      //       let found = false;
+      //       for (const player of highest) {
+      //         if (player.id === client.id) {
+      //           found = true;
+      //           break;
+      //         }
+      //       }
+      //       if (!found) setHighest((prevHighest) => [...prevHighest, client]);
+      //     }
+      //     setLoading(false);
+      //   });
+      // }
     };
 
     socket.on("get_room_clients", (clientsData) => {
-      updatePlayerList(clientsData);
+      if (type !== "finalscore" && players.length > 0) {
+        updatePlayerList(clientsData);
+      }
+    });
+
+    socket.on("receive_calculate_score", (highestData) => {
+      setLoading(true);
+      console.log("highestdata", highestData);
+      setHighest(highestData);
+      setLoading(false);
     });
 
     // socket.on("leave_room", (id) => {
     //   console.log(`${id} left the room`);
     // });
-  }, [socket, highest]);
+  }, [socket]);
 
   const PlayerList = players.map((player) => (
     <li key={nanoid()}>
