@@ -44,14 +44,11 @@ const PlayerList = ({ type }) => {
     };
 
     socket.on("get_room_clients", (clientsData) => {
-      if (type !== "finalscore" && players.length > 0) {
-        updatePlayerList(clientsData);
-      }
+      updatePlayerList(clientsData);
     });
 
     socket.on("receive_calculate_score", (highestData) => {
       setLoading(true);
-      console.log("highestdata", highestData);
       setHighest(highestData);
       setLoading(false);
     });
@@ -76,10 +73,9 @@ const PlayerList = ({ type }) => {
     <>
       {endScreen && !loading && (
         <h3 className={styles.winner}>
-          {console.log("display highest ", highest)}
           {highest.length > 1
             ? "It's a tie!"
-            : `The winner is ${highest[0].username}`}
+            : `The winner is ${highest[0].username}!`}
         </h3>
       )}
       <div className={styles.PlayerList}>

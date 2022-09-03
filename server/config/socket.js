@@ -225,14 +225,13 @@ const connectSocket = (io) => {
 
         for (const clientSocket of sockets) {
           const clientScore = clientSocket.data[room];
+          const clientObj = {
+            id: clientSocket.id,
+            username: clientSocket.data.username,
+            score: clientScore,
+          };
           if (clientScore > highest[0].score) {
-            highest = [
-              {
-                id: clientSocket.id,
-                username: clientSocket.data.username,
-                score: clientScore,
-              },
-            ];
+            highest = [clientObj];
           } else if (clientScore === highest[0].score) {
             let found = false;
             for (let i = 1; i < highest.length; i++) {
@@ -242,11 +241,7 @@ const connectSocket = (io) => {
               }
             }
             if (!found) {
-              highest.push({
-                id: clientSocket.id,
-                username: clientSocket.data.username,
-                score: clientScore,
-              });
+              highest.push(clientObj);
             }
           }
         }
