@@ -6,6 +6,7 @@ Each player takes turns guessing or drawing after one another. The player with t
 Check out my bullet board [https://heiinhei911.github.io/bulletin-board](https://heiinhei911.github.io/bulletin-board) to see tracked bugs of this project.
 
 Demo GIF:
+
 ![Demo GIF](./client/assets/demo.gif)
 
 ## How to Play
@@ -76,6 +77,7 @@ On the canvas, you can:
 ## Frameworks/Libraries Used
 
 Frontend: React, React Router, SASS Modules, TypeScript
+
 Backend: Socket.io, NodeJS, Express, MongoDB, TypeScript
 
 ## Credits
