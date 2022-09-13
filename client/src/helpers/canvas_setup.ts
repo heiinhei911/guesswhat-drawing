@@ -1,3 +1,9 @@
+import { MutableRefObject, Dispatch, SetStateAction } from "react";
+import { Socket } from "socket.io-client";
+import {
+  ServerToClientEvents,
+  ClientToServerEvents,
+} from "@backend/interfaces";
 import { MOBILE_BREAKPOINT, MAX_CANVAS_SIZE } from "../styles/_constants";
 
 const getSmallerScreenLength = () => {
@@ -22,60 +28,94 @@ const canvasSize = getSmallerScreenLength();
 const scaleIndex =
   canvasSize < MAX_CANVAS_SIZE ? MAX_CANVAS_SIZE / canvasSize : 1;
 
-const updateMousePos = (e, setMousePosX, setMousePosY) => {
+const updateMousePos = (
+  e: any,
+  setMousePosX: Dispatch<SetStateAction<number>>,
+  setMousePosY: Dispatch<SetStateAction<number>>
+) => {
   const { offsetX, offsetY } = e.nativeEvent;
   setMousePosX(offsetX);
   setMousePosY(offsetY);
 };
 
 const startDrawing = (
-  e,
-  send,
-  ctxRef,
-  setIsDrawing,
-  socket,
-  id,
+  e: any,
+  send: boolean,
+  ctxRef: MutableRefObject<CanvasRenderingContext2D | null>,
+  setIsDrawing: Dispatch<SetStateAction<boolean>>,
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>,
+  id: string,
   sendScaleIndex = 1
 ) => {
   const { x, y } = getClickCoords(e);
   // if (e.defaultPrevented === false) e.preventDefault();
 
   setIsDrawing(true);
-  ctxRef.current.beginPath();
-  ctxRef.current.moveTo(x * sendScaleIndex, y * sendScaleIndex);
+  if (ctxRef.current) {
+    ctxRef.current.beginPath();
+    ctxRef.current.moveTo(x * sendScaleIndex, y * sendScaleIndex);
+  }
 
   if (send) sendStartDrawing(e, socket, id);
 };
 
-const finishDrawing = (e, send, ctxRef, setIsDrawing, socket, id) => {
+const finishDrawing = (
+  e: any,
+  send: boolean,
+  ctxRef: MutableRefObject<CanvasRenderingContext2D | null>,
+  setIsDrawing: Dispatch<SetStateAction<boolean>>,
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>,
+  id: string
+) => {
   if (e.defaultPrevented === false) e.preventDefault();
-  ctxRef.current.closePath();
+  if (ctxRef.current) ctxRef.current.closePath();
   setIsDrawing(false);
 
   if (send) sendFinishDrawing(e, socket, id);
 };
 
-const draw = (e, send, ctxRef, socket, id, sendScaleIndex = 1) => {
+const draw = (
+  e: any,
+  send: boolean,
+  ctxRef: MutableRefObject<CanvasRenderingContext2D | null>,
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>,
+  id: string,
+  sendScaleIndex = 1
+) => {
   const { x, y } = getClickCoords(e);
 
   // if (e.defaultPrevented === false) e.preventDefault();
-  ctxRef.current.lineTo(x * sendScaleIndex, y * sendScaleIndex);
-  ctxRef.current.stroke();
+  if (ctxRef.current) {
+    ctxRef.current.lineTo(x * sendScaleIndex, y * sendScaleIndex);
+    ctxRef.current.stroke();
+  }
 
   if (send) sendDrawing(e, socket, id);
 };
 
-const sendStartDrawing = async (e, socket, id) => {
+const sendStartDrawing = async (
+  e: any,
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>,
+  id: string
+) => {
   const drawingData = getDrawingData(e, id);
   await socket.emit("send_startDrawing", drawingData);
 };
 
-const sendDrawing = async (e, socket, id) => {
+const sendDrawing = async (
+  e: any,
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>,
+  id: string
+) => {
   const drawingData = getDrawingData(e, id);
   await socket.emit("send_drawing", drawingData);
 };
 
-const sendFinishDrawing = async (e, socket, id) => {
+const sendFinishDrawing = async (
+  e: any,
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>,
+  id: string
+) => {
   const drawingData = {
     e: {
       type: e.type,
@@ -85,7 +125,7 @@ const sendFinishDrawing = async (e, socket, id) => {
   await socket.emit("send_finishDrawing", drawingData);
 };
 
-const getClickCoords = (e) => {
+const getClickCoords = (e: any) => {
   let coords = { x: 0, y: 0 };
 
   if (e.type === "touchstart" || e.type === "touchmove") {
@@ -106,7 +146,8 @@ const getClickCoords = (e) => {
   return coords;
 };
 
-const getDrawingData = (e, id) => {
+const getDrawingData = (e: any, id: string) => {
+  console.log(e);
   const nativeEvent = e.nativeEvent;
 
   return {
@@ -133,13 +174,18 @@ const getDrawingData = (e, id) => {
   };
 };
 
-const clearCanvas = (ctxRef, canvasRef) => {
-  ctxRef.current.clearRect(
-    0,
-    0,
-    canvasRef.current.width,
-    canvasRef.current.height
-  );
+const clearCanvas = (
+  ctxRef: MutableRefObject<CanvasRenderingContext2D | null>,
+  canvasRef: MutableRefObject<HTMLCanvasElement | null>
+) => {
+  if (ctxRef.current && canvasRef.current) {
+    ctxRef.current.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+  }
 };
 
 export {

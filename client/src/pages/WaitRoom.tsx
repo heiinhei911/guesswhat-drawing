@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC, Dispatch, SetStateAction } from "react";
 import { useRounds } from "../contexts/RoundContext";
 import { useSocket } from "../contexts/SocketContext";
 import { useName } from "../contexts/NameContext";
@@ -13,30 +13,39 @@ import styles from "./WaitRoom.module.scss";
 import { LOBBY } from "../styles/_constants";
 import EndScreen from "../components/EndScreen";
 
-const WaitRoom = ({ setId }) => {
+interface ILocationState {
+  fromHome: boolean;
+}
+
+const WaitRoom: FC<{ setId: Dispatch<SetStateAction<string>> }> = ({
+  setId,
+}) => {
   const socket = useSocket();
   const { id } = useParams();
   const { user } = useName();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const location = useLocation();
   const { beginGame, endScreen } = useRounds();
-  const fromHome = state?.fromHome || false;
-  const [roomChecked, setRoomChecked] = useState(null);
+  const fromHome: boolean =
+    (location.state as ILocationState)?.fromHome || false;
+  const [roomChecked, setRoomChecked] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setId(id);
+    if (id) {
+      setId(id);
 
-    if (fromHome) {
-      setRoomChecked(true);
-      joinRoom(socket, id, user); // Double join
-    } else {
-      socket.emit("join_room_check", id);
+      if (fromHome) {
+        setRoomChecked(true);
+        joinRoom(socket, id, user); // Double join
+      } else {
+        socket.emit("join_room_check", id);
+      }
+      // return () => leaveRoom(socket, id);
     }
-    // return () => leaveRoom(socket, id);
   }, []);
 
   useEffect(() => {
-    if (!fromHome && user && roomChecked) {
+    if (!fromHome && user && roomChecked && id) {
       joinRoom(socket, id, user);
     }
   }, [user, roomChecked]);
@@ -52,9 +61,11 @@ const WaitRoom = ({ setId }) => {
   }, [socket]);
 
   const returnHome = () => {
-    leaveRoom(socket, id);
-    joinRoom(socket, LOBBY);
-    navigate("/");
+    if (id) {
+      leaveRoom(socket, id);
+      joinRoom(socket, LOBBY);
+      navigate("/");
+    }
   };
 
   return (

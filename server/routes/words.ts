@@ -1,15 +1,16 @@
-const express = require("express");
+import express, { Request, Response } from "express";
+import Word from "../models/Word";
 const router = express.Router();
-
-const Word = require("../models/Word");
 
 // @route GET api/words
 // @description Get all words
 // @access Public
-router.get("/", (req, res) => {
+router.get("/", (req: Request, res: Response) => {
   Word.find()
     .then((words) => res.json(words))
-    .catch((err) => res.status(404).json({ nowordsfound: "No Words found" }));
+    .catch((err: unknown) =>
+      res.status(404).json({ nowordsfound: "No Words found" })
+    );
 });
 
 // @route GET api/words/one
@@ -26,6 +27,6 @@ router.get("/", (req, res) => {
 // @route GET api/words/test
 // @description tests words route
 // @access Public
-router.get("/test", (req, res) => res.send("Testing"));
+router.get("/test", (req: Request, res: Response) => res.send("Testing"));
 
-module.exports = router;
+export default router;

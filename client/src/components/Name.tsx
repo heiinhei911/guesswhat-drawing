@@ -1,15 +1,20 @@
-import { useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { useName } from "../contexts/NameContext";
 import styles from "./Name.module.scss";
 
-const Name = ({ isEmpty, homeUserError, setHomeUserError, btn = false }) => {
+const Name: FC<{
+  isEmpty?: (field: string) => boolean | void;
+  homeUserError?: boolean;
+  setHomeUserError?: Dispatch<SetStateAction<boolean>>;
+  btn?: boolean;
+}> = ({ isEmpty, homeUserError, setHomeUserError, btn = false }) => {
   const { user, setUser } = useName();
   const [name, setName] = useState("");
   const [userError, setUserError] = useState(false);
   const fromHome = typeof homeUserError === "boolean";
 
   useEffect(() => {
-    if (fromHome) {
+    if (fromHome && isEmpty) {
       isEmpty(user);
       window.localStorage.setItem("user", JSON.stringify(user));
     }
@@ -35,7 +40,7 @@ const Name = ({ isEmpty, homeUserError, setHomeUserError, btn = false }) => {
           placeholder="Your name..."
           onChange={(e) => {
             if (userError) setUserError(false);
-            if (homeUserError) setHomeUserError(false);
+            if (homeUserError && setHomeUserError) setHomeUserError(false);
             if (fromHome) {
               setUser(e.target.value);
             } else {

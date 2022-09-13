@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useCanvas } from "../contexts/CanvasProperties";
 import ColorPicker from "./CanvasToolbar/ColorPicker";
 import StrokeSize from "./CanvasToolbar/StrokeSize";

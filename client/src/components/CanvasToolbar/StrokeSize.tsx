@@ -1,13 +1,13 @@
+import { ChangeEvent } from "react";
 import { useCanvas } from "../../contexts/CanvasProperties";
-import { useEffect, useState } from "react";
 import styles from "./StrokeSize.module.scss";
 
 const StrokeSize = () => {
   const { color, strokeSize, setStrokeSize } = useCanvas();
 
-  const handleStrokeSizeChange = (e) => {
+  const handleStrokeSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    setStrokeSize([value, `0.${value}`]);
+    setStrokeSize([value, parseInt(`0.${value}`)]);
   };
 
   return (
@@ -29,7 +29,9 @@ const StrokeSize = () => {
         max="8"
         value={strokeSize[0]}
         step="1"
-        onChange={(e) => handleStrokeSizeChange(e)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          handleStrokeSizeChange(e)
+        }
       />
     </span>
   );

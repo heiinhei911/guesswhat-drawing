@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useSocket } from "../contexts/SocketContext";
 import { CanvasProvider } from "../contexts/CanvasProperties";
 import { useRounds } from "../contexts/RoundContext";
-import Canvas from "../components/Canvas";
-import CanvasToolbar from "../components/CanvasToolbar";
-import Chat from "../components/Chat";
-import Timer from "../components/Timer";
+import Canvas from "./Canvas";
+import CanvasToolbar from "./CanvasToolbar";
+import Chat from "./Chat";
+import Timer from "./Timer";
 import styles from "./Game.module.scss";
 import PlayerList from "./PlayerList";
-import { useName } from "../contexts/NameContext";
-import { useRoom } from "../contexts/RoomContext";
+import { IRoundEnd } from "../contexts/RoundContext";
 
 const Game = () => {
   const socket = useSocket();
@@ -25,8 +23,6 @@ const Game = () => {
     turn,
     isTurn,
   } = useRounds();
-
-  // const [loading, setLoading] = useState(true);
 
   // useEffect(() => {
   //   socket.on("room_exists", (roomExists) => {
@@ -44,10 +40,11 @@ const Game = () => {
   useEffect(() => {
     socket.on("end_of_round", (matchedWordData) => {
       console.log("end of round");
-      setRoundEnd({
+      const roundEndObj: IRoundEnd = {
         type: matchedWordData.type,
         user: matchedWordData.user,
-      });
+      };
+      setRoundEnd(roundEndObj);
       // setRoom(matchedWordData.room);
       if (matchedWordData.type === "guessed") {
         console.log(`${matchedWordData.user} guessed the word "${word.word}"`);
@@ -105,7 +102,7 @@ const Game = () => {
           </div>
         </div>
       </div>
-      {roundEnd && (
+      {roundEnd && typeof roundEnd !== "boolean" && (
         <div className={styles.overlay}>
           <h2>
             {roundEnd.type === "guessed"

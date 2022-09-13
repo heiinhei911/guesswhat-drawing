@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useCanvas } from "../../contexts/CanvasProperties";
 import styles from "./ColorPicker.module.scss";
 import { nanoid } from "nanoid";
 
-const Color = ({ color }) => {
+const Color: FC<{ color: string }> = ({ color }) => {
   return <span className={styles.tile} style={{ backgroundColor: color }} />;
 };
 
 const ColorPicker = () => {
   const { color, setColor } = useCanvas();
-  const [colorMenu, setColorMenu] = useState(false);
+  const [colorMenu, setColorMenu] = useState<boolean>(false);
 
   const toggleColorMenu = () => {
     setColorMenu((prevColorMenu) => !prevColorMenu);
   };
 
-  const changeColor = (color) => {
+  const changeColor = (color: string) => {
     setColor(color);
     // toggleColorMenu();
   };

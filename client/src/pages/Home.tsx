@@ -13,10 +13,10 @@ const Home = () => {
   const socket = useSocket();
   const { user } = useName();
   const navigate = useNavigate();
-  const [room, setRoom] = useState("");
-  const [roomError, setRoomError] = useState(false);
-  const [userEmpty, setUserEmpty] = useState(true);
-  const [homeUserError, setHomeUserError] = useState(false);
+  const [room, setRoom] = useState<string>("");
+  const [roomError, setRoomError] = useState<boolean>(false);
+  const [userEmpty, setUserEmpty] = useState<boolean>(true);
+  const [homeUserError, setHomeUserError] = useState<boolean>(false);
 
   useEffect(() => {
     joinRoom(socket, LOBBY);
@@ -36,7 +36,7 @@ const Home = () => {
 
   const createNewRoom = () => {
     if (!userEmpty) {
-      // Create a randomized 10 digit room ID
+      // Create a random 10-digit room ID
       const newRoomId = nanoid(10);
 
       leaveRoom(socket, LOBBY);
@@ -48,7 +48,7 @@ const Home = () => {
         });
       navigate(newRoomId, { state: { fromHome: true } });
 
-      socket.emit("send_creator", room);
+      // socket.emit("send_creator", room);
     } else {
       setHomeUserError(true);
     }

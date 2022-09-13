@@ -1,13 +1,13 @@
-const makeDoubleDigits = (digit) => {
+const makeDoubleDigits = (digit: number) => {
   if (digit >= 10) {
     return digit;
   }
   return `0${digit}`;
 };
 
-const isEmpty = (field) => field.length === 0;
+const isEmpty = (field: string) => field.length === 0;
 
-const copyToClipboard = async (text) => {
+const copyToClipboard = async (text: string) => {
   if ("clipboard" in navigator) {
     return await navigator.clipboard.writeText(text);
   } else {

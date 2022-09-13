@@ -1,38 +1,49 @@
-const axios = require("axios");
-require("dotenv").config();
+import { Socket, Server } from "socket.io";
+import axios from "axios";
+import * as dotenv from "dotenv";
+import * as interfaces from "./interfaces";
+dotenv.config();
 
-const connectSocket = (io) => {
-  io.on("connection", (socket) => {
-    const getClients = (room) => io.sockets.adapter.rooms.get(room);
+const connectSocket = (
+  io: Server<interfaces.ClientToServerEvents, interfaces.ServerToClientEvents>
+) => {
+  io.on("connection", (socket: Socket) => {
+    const getClients = (room: string) => io.sockets.adapter.rooms.get(room);
 
-    const removePlayerRoomScore = (room) => {
+    const removePlayerRoomScore = (room: string) => {
       delete socket.data[room];
     };
 
-    const randomNumberArray = async (size, push, type) => {
-      const array = [];
+    const randomNumberArray = async (
+      size: number,
+      push: (interfaces.IOrderList | interfaces.IWordList)[],
+      type: string
+    ) => {
+      const array: (interfaces.IOrderList | interfaces.IWordList)[] = [];
       while (array.length < size) {
         let r = Math.floor(
           Math.random() * (type === "turn" ? size : push.length)
         );
+        const value: interfaces.IOrderList | interfaces.IWordList = push[r];
 
-        if (array.indexOf(push[r]) === -1) {
-          array.push(push[r]);
+        if (array.indexOf(value) === -1) {
+          array.push(value);
         }
       }
 
       return array;
     };
 
-    const getTurnsOrder = async (room, rounds) => {
-      const clientsList = [];
+    const getTurnsOrder = async (room: string, rounds: number) => {
+      const clientsList: interfaces.IOrderList[] = [];
       const sockets = await io.in(room).fetchSockets();
 
       for (const clientSocket of sockets) {
-        clientsList.push({
+        const clientObj: interfaces.IOrderList = {
           id: clientSocket.id,
           username: clientSocket.data.username,
-        });
+        };
+        clientsList.push(clientObj);
       }
 
       let randomizedClientsList = await randomNumberArray(
@@ -57,12 +68,12 @@ const connectSocket = (io) => {
       return randomizedClientsList;
     };
 
-    const getRoundWords = async (rounds) => {
+    const getRoundWords = async (rounds: number) => {
       try {
         const res = await axios.get(
           process.env.ENV === "PRODUCTION"
             ? "https://guesswhat-drawing.herokuapp.com/api/words"
-            : "http://192.168.68.107:3001/api/words"
+            : "http://192.168.68.112:3001/api/words"
         );
         const allWords = res.data;
 
@@ -72,13 +83,13 @@ const connectSocket = (io) => {
       }
     };
 
-    const updatePlayerList = async (room, removeSelf = false) => {
+    const updatePlayerList = async (room: string, removeSelf = false) => {
       const clients = getClients(room);
-      const clientsList = [];
+      const clientsList: interfaces.IClientsList[] = [];
       const sockets = await io.in(room).fetchSockets();
 
       for (const clientSocket of sockets) {
-        const clientObj = {
+        const clientObj: interfaces.IClientsList = {
           id: clientSocket.id,
           username: clientSocket.data.username,
           score:
@@ -102,19 +113,21 @@ const connectSocket = (io) => {
       });
     };
 
-    const setCreator = (room) => {
-      const roomData = getClients(room);
-      if (roomData.creator) {
-        socket.emit("receive_creator", roomData.creator);
-      } else {
-        roomData.creator = socket.id;
+    const setCreator = (room: string) => {
+      const roomData: any = getClients(room);
+      if (roomData) {
+        if (roomData.creator) {
+          socket.emit("receive_creator", roomData.creator);
+        } else {
+          roomData.creator = socket.id;
+        }
       }
     };
 
     console.log("connected ", socket.id);
 
     // Join/Leave Rooms ---------------------------
-    socket.on("join_room_check", (room) => {
+    socket.on("join_room_check", (room: string) => {
       socket.emit(
         "room_exists",
         io.sockets.adapter.rooms.has(room)
@@ -122,19 +135,19 @@ const connectSocket = (io) => {
       );
     });
 
-    socket.on("join_room", async (joinRoomData) => {
+    socket.on("join_room", async (joinRoomData: interfaces.IJoinRoomData) => {
       // const sockets = await io.fetchSockets();
 
       socket.join(joinRoomData.room);
       updatePlayerList(joinRoomData.room);
 
       if (joinRoomData.room !== "lobby") {
+        const clients = getClients(joinRoomData.room);
         setCreator(joinRoomData.room);
 
-        io.in(joinRoomData.room).emit(
-          "update_player_count",
-          getClients(joinRoomData.room).size
-        );
+        if (clients) {
+          io.in(joinRoomData.room).emit("update_player_count", clients.size);
+        }
 
         if (!socket.data.username) {
           socket.data.username = joinRoomData.user;
@@ -144,84 +157,96 @@ const connectSocket = (io) => {
       console.log(`User ${socket.id} joined ${joinRoomData.room}`);
     });
 
-    socket.on("leave_room", (room) => {
+    socket.on("leave_room", (room: string) => {
       // socket.to(room).emit("left_room");
       socket.leave(room);
       updatePlayerList(room);
-      io.in(room).emit("update_player_count", getClients(room)?.size);
+
+      const clients = getClients(room);
+      if (clients) {
+        io.in(room).emit("update_player_count", clients.size);
+      }
 
       removePlayerRoomScore(room);
       console.log(`User ${socket.id} left ${room}`);
     });
 
     // Game Logic ---------------------------------
-    socket.on("get_players", (room) => {
+    socket.on("get_players", (room: string) => {
       updatePlayerList(room);
     });
 
-    socket.on("send_start_game", (gameData) => {
+    socket.on("send_start_game", (gameData: interfaces.IGameData) => {
       socket.to(gameData.room).emit("receive_start_game", gameData);
     });
 
-    socket.on("send_stop_game", (room) => {
+    socket.on("send_stop_game", (room: string) => {
       socket.to(room).emit("receive_stop_game");
     });
 
-    socket.on("send_start_rounds", async (startRoundsData) => {
-      // Get turnsOrder and roundWords
-      const order = await getTurnsOrder(
-        startRoundsData.room,
-        startRoundsData.totalRounds
-      );
-      const words = await getRoundWords(startRoundsData.totalRounds);
+    socket.on(
+      "send_start_rounds",
+      async (startRoundsData: { room: string; totalRounds: number }) => {
+        // Get turnsOrder and roundWords
+        const order = await getTurnsOrder(
+          startRoundsData.room,
+          startRoundsData.totalRounds
+        );
+        const words = await getRoundWords(startRoundsData.totalRounds);
 
-      console.log(order);
-      console.log(words);
+        console.log(order);
+        console.log(words);
 
-      // Create score variable in room
-      const sockets = await io.in(startRoundsData.room).fetchSockets();
-
-      for (const clientSocket of sockets) {
-        clientSocket.data[startRoundsData.room] = 0;
-        console.log(clientSocket.data);
-      }
-
-      io.in(startRoundsData.room).emit("receive_start_rounds", {
-        room: startRoundsData.room,
-        order,
-        words,
-      });
-    });
-
-    // End of Round Types --------------------------
-    socket.on("matched_word", (matchedWordData) => {
-      const updatePlayersScore = async () => {
-        const sockets = await io.in(matchedWordData.room).fetchSockets();
+        // Create score variable in room
+        const sockets = await io.in(startRoundsData.room).fetchSockets();
 
         for (const clientSocket of sockets) {
-          let score = clientSocket.data[matchedWordData.room];
-          if (clientSocket.id === matchedWordData.turn) {
-            score = score + parseInt(process.env.DRAWER_POINT);
-          } else if (clientSocket.id === socket.id) {
-            score = score + parseInt(process.env.GUESSER_POINT);
-          }
-          clientSocket.data[matchedWordData.room] = score;
+          clientSocket.data[startRoundsData.room] = 0;
+          console.log(clientSocket.data);
         }
-      };
-      updatePlayersScore();
-      updatePlayerList(matchedWordData.room);
 
-      io.in(matchedWordData.room).emit("end_of_round", matchedWordData);
-    });
+        io.in(startRoundsData.room).emit("receive_start_rounds", {
+          room: startRoundsData.room,
+          order,
+          words,
+        });
+      }
+    );
 
-    socket.on("player_left", (playerData) => {
+    // End of Round Types --------------------------
+    socket.on(
+      "matched_word",
+      (matchedWordData: interfaces.IMatchedWordData) => {
+        const updatePlayersScore = async () => {
+          const sockets = await io.in(matchedWordData.room).fetchSockets();
+          const drawerPoint = interfaces.getEnvVar("DRAWER_POINT");
+          const guessPoint = interfaces.getEnvVar("GUESSER_POINT");
+
+          for (const clientSocket of sockets) {
+            let score = clientSocket.data[matchedWordData.room];
+            if (clientSocket.id === matchedWordData.turn) {
+              score = score + parseInt(drawerPoint);
+            } else if (clientSocket.id === socket.id) {
+              score = score + parseInt(guessPoint);
+            }
+            clientSocket.data[matchedWordData.room] = score;
+          }
+        };
+        updatePlayersScore();
+        updatePlayerList(matchedWordData.room);
+
+        io.in(matchedWordData.room).emit("end_of_round", matchedWordData);
+      }
+    );
+
+    socket.on("player_left", (playerData: interfaces.IPlayerData) => {
       io.in(playerData.room).emit("end_of_round", playerData);
     });
 
-    socket.on("send_calculate_score", async (room) => {
+    socket.on("send_calculate_score", async (room: string) => {
       const calculatePlayerScore = async () => {
         const sockets = await io.in(room).fetchSockets();
-        let highest = [{ id: "", score: 0 }];
+        let highest = [{ id: "", username: "", score: 0 }];
 
         for (const clientSocket of sockets) {
           const clientScore = clientSocket.data[room];
@@ -252,38 +277,45 @@ const connectSocket = (io) => {
     });
 
     // Canvas Drawing -------------------------------
-    socket.on("send_startDrawing", (drawingData) => {
+    socket.on("send_startDrawing", (drawingData: any) => {
       socket.to(drawingData.room).emit("receive_startDrawing", drawingData);
     });
 
-    socket.on("send_drawing", (drawingData) => {
+    socket.on("send_drawing", (drawingData: any) => {
       socket.to(drawingData.room).emit("receive_drawing", drawingData);
     });
 
-    socket.on("send_finishDrawing", (drawingData) => {
+    socket.on("send_finishDrawing", (drawingData: any) => {
       socket.to(drawingData.room).emit("receive_finishDrawing", drawingData);
     });
 
-    socket.on("send_canvasRef", (canvasData) => {
-      socket.to(canvasData.room).emit("receive_canvasRef", canvasData);
-    });
+    socket.on(
+      "send_canvasRef",
+      (canvasData: interfaces.ICanvasData | interfaces.ICanvasDataClear) => {
+        socket.to(canvasData.room).emit("receive_canvasRef", canvasData);
+      }
+    );
 
     // Chat -----------------------------------------
-    socket.on("send_chat", (messageData) => {
+    socket.on("send_chat", (messageData: interfaces.IMessageData) => {
       socket.to(messageData.room).emit("receive_chat", messageData);
     });
 
-    socket.on("send_guess", (messageData) => {
+    socket.on("send_guess", (messageData: interfaces.IMessageData) => {
       socket.to(messageData.room).emit("receive_guess", messageData);
     });
 
     // Disconnecting ---------------------------------
-    socket.on("disconnecting", (reason) => {
+    socket.on("disconnecting", (reason: string) => {
       console.log(`${socket.id} is disconnecting. Reason: `, reason);
 
       for (const room of socket.rooms) {
+        const clients = getClients(room);
         updatePlayerList(room, true);
-        io.in(room).emit("update_player_count", getClients(room)?.size - 1);
+
+        if (clients) {
+          io.in(room).emit("update_player_count", clients.size - 1);
+        }
 
         removePlayerRoomScore(room);
       }
@@ -295,4 +327,4 @@ const connectSocket = (io) => {
   });
 };
 
-module.exports = connectSocket;
+export default connectSocket;

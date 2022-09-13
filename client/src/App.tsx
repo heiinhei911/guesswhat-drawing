@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import { io } from "socket.io-client";
 import Home from "./pages/Home";
 import styles from "./App.module.scss";
 import { SocketProvider } from "./contexts/SocketContext";
@@ -12,34 +11,24 @@ import { RoomProvider } from "./contexts/RoomContext";
 
 console.log(process.env.REACT_APP_ENV);
 
-const socket = io(
-  process.env.REACT_APP_ENV === "PRODUCTION"
-    ? "https://guesswhat-drawing.herokuapp.com"
-    : "http://192.168.68.107:3001",
-  {
-    // withCredentials: true,
-    // extraHeaders: {
-    //   "my-custom-header": "abcd",
-    // },
-  }
-);
-
 const App = () => {
   // const [mousePosX, setMousePosX] = useState(null);
   // const [mousePosY, setMousePosY] = useState(null);
-  const [height, setHeight] = useState(window.innerHeight);
-  const [id, setId] = useState("");
+  const [height, setHeight] = useState<number>(window.innerHeight);
+  const [id, setId] = useState<string>("");
 
   useEffect(() => {
-    window.addEventListener("resize", (e) => setHeight(e.target.innerHeight));
+    window.addEventListener("resize", (e) =>
+      setHeight((e.target as Window).innerHeight)
+    );
     return () =>
       window.removeEventListener("resize", (e) =>
-        setHeight(e.target.innerHeight)
+        setHeight((e.target as Window).innerHeight)
       );
   }, []);
 
   return (
-    <SocketProvider socket={socket}>
+    <SocketProvider>
       <NameProvider>
         <div className={styles.App} style={{ height: height }}>
           <Router>

@@ -2,20 +2,18 @@ import { useEffect, useState } from "react";
 import { useSocket } from "../contexts/SocketContext";
 import { useRoom } from "../contexts/RoomContext";
 import { useRounds } from "../contexts/RoundContext";
-// import { leaveRoom } from "../helpers/socket_functions";
 import styles from "./SetRound.module.scss";
 
 const SetRound = () => {
   const socket = useSocket();
   const { room, isCreator } = useRoom();
   const { updateRoundsInfo, setBeginGame } = useRounds();
-  // const navigate = useNavigate();
-  const [rounds, setRounds] = useState(1);
-  const [minRounds, setMinRounds] = useState(1);
-  const [duration, setDuration] = useState(1);
-  const [error, setError] = useState("");
-  const [beginGameDelay, setBeginGameDelay] = useState(false);
-  const [startGameSeconds, setStartGameSeconds] = useState(5);
+  const [rounds, setRounds] = useState<number>(1);
+  const [minRounds, setMinRounds] = useState<number | null>(1);
+  const [duration, setDuration] = useState<number>(1);
+  const [error, setError] = useState<string>("");
+  const [beginGameDelay, setBeginGameDelay] = useState<boolean>(false);
+  const [startGameSeconds, setStartGameSeconds] = useState<number>(5);
 
   useEffect(() => {
     socket.on("update_player_count", (playerCount) => {
@@ -35,14 +33,16 @@ const SetRound = () => {
   }, [socket]);
 
   useEffect(() => {
-    if (rounds < minRounds) {
-      setRounds(minRounds);
+    if (minRounds) {
+      if (rounds < minRounds) {
+        setRounds(minRounds);
+      }
     }
   }, [minRounds]);
 
   useEffect(() => {
-    let startGameDelay = null;
-    let startGameTimer = null;
+    let startGameDelay: ReturnType<typeof setTimeout> | null = null;
+    let startGameTimer: ReturnType<typeof setInterval> | null = null;
     if (beginGameDelay) {
       startGameTimer = setInterval(() => {
         setStartGameSeconds((prevSeconds) => prevSeconds - 1);
@@ -51,14 +51,18 @@ const SetRound = () => {
         setBeginGame(true);
       }, 5000);
     } else {
-      clearTimeout(startGameDelay);
-      clearInterval(startGameTimer);
-      setStartGameSeconds(5);
+      if (startGameDelay && startGameTimer) {
+        clearTimeout(startGameDelay);
+        clearInterval(startGameTimer);
+        setStartGameSeconds(5);
+      }
     }
     return () => {
-      clearTimeout(startGameDelay);
-      clearInterval(startGameTimer);
-      setStartGameSeconds(5);
+      if (startGameDelay && startGameTimer) {
+        clearTimeout(startGameDelay);
+        clearInterval(startGameTimer);
+        setStartGameSeconds(5);
+      }
     };
   }, [beginGameDelay]);
 
@@ -78,7 +82,7 @@ const SetRound = () => {
   //   navigate("/");
   // };
 
-  const validateRoundInputs = (value, type) => {
+  const validateRoundInputs = (value: number, type: string) => {
     if (type === "rounds") {
       if (value >= 1 && value <= 10) {
         setRounds(value);
@@ -105,11 +109,13 @@ const SetRound = () => {
             <span>Number of round(s):</span>
             <input
               type="number"
-              min={minRounds}
+              min={minRounds ? minRounds : 1}
               max={10}
               value={rounds}
               disabled={!isCreator || beginGameDelay}
-              onChange={(e) => validateRoundInputs(e.target.value, "rounds")}
+              onChange={(e) =>
+                validateRoundInputs(parseInt(e.target.value), "rounds")
+              }
             />
             {error === "rounds" && (
               <span className={styles.error}>
@@ -125,7 +131,9 @@ const SetRound = () => {
               max={5}
               value={duration}
               disabled={!isCreator || beginGameDelay}
-              onChange={(e) => validateRoundInputs(e.target.value, "duration")}
+              onChange={(e) =>
+                validateRoundInputs(parseInt(e.target.value), "duration")
+              }
             />
             {error === "duration" && (
               <span className={styles.error}>
@@ -149,13 +157,13 @@ const SetRound = () => {
           <button
             className={styles.button}
             onClick={beginGameDelay ? cancelGame : startGame}
-            disabled={minRounds < 2}
+            disabled={minRounds ? minRounds < 2 : false}
           >
             {beginGameDelay ? "Cancel" : "Start Game"}
           </button>
         </div>
       )}
-      {isCreator && minRounds < 2 && (
+      {isCreator && minRounds && minRounds < 2 && (
         <div>
           <span>The Room ID has been copied to your clipboard</span>
           <br></br>

@@ -1,50 +1,47 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useSocket } from "../contexts/SocketContext";
 import { nanoid } from "nanoid";
 import styles from "./PlayerList.module.scss";
 import { useRoom } from "../contexts/RoomContext";
 import { useRounds } from "../contexts/RoundContext";
+import { IClientsList } from "@backend/interfaces";
 
-const PlayerList = ({ type }) => {
+const PlayerList: FC<{ type: string }> = ({ type }) => {
   const socket = useSocket();
   const { endScreen } = useRounds();
   const { room, creatorId } = useRoom();
-  const [playerCount, setPlayerCount] = useState(0);
-  const [players, setPlayers] = useState([]);
-  const [highest, setHighest] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [playerCount, setPlayerCount] = useState<number>(0);
+  const [players, setPlayers] = useState<IClientsList[]>([]);
+  const [highest, setHighest] = useState<IClientsList[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     socket.emit("get_players", room);
   }, []);
 
   useEffect(() => {
-    const updatePlayerList = (clientsData) => {
-      setPlayerCount(clientsData.total);
-      setPlayers(clientsData.clients);
-
-      // if (clientsData.clients[0].score) {
-      //   clientsData.clients.forEach((client) => {
-      //     setLoading(true);
-      //     if (highest.length === 0 || client.score > highest[0].score) {
-      //       setHighest([client]);
-      //     } else if (client.score === highest[0].score) {
-      //       let found = false;
-      //       for (const player of highest) {
-      //         if (player.id === client.id) {
-      //           found = true;
-      //           break;
-      //         }
-      //       }
-      //       if (!found) setHighest((prevHighest) => [...prevHighest, client]);
-      //     }
-      //     setLoading(false);
-      //   });
-      // }
-    };
+    // if (clientsData.clients[0].score) {
+    //   clientsData.clients.forEach((client) => {
+    //     setLoading(true);
+    //     if (highest.length === 0 || client.score > highest[0].score) {
+    //       setHighest([client]);
+    //     } else if (client.score === highest[0].score) {
+    //       let found = false;
+    //       for (const player of highest) {
+    //         if (player.id === client.id) {
+    //           found = true;
+    //           break;
+    //         }
+    //       }
+    //       if (!found) setHighest((prevHighest) => [...prevHighest, client]);
+    //     }
+    //     setLoading(false);
+    //   });
+    // }
 
     socket.on("get_room_clients", (clientsData) => {
-      updatePlayerList(clientsData);
+      setPlayerCount(clientsData.total);
+      setPlayers(clientsData.clients);
     });
 
     socket.on("receive_calculate_score", (highestData) => {

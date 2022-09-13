@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState, FormEvent } from "react";
 import { useSocket } from "../contexts/SocketContext";
 import { useRounds } from "../contexts/RoundContext";
 import { useRoom } from "../contexts/RoomContext";
@@ -7,6 +7,7 @@ import { makeDoubleDigits } from "../helpers/miscellaneous";
 import { BsPersonCircle } from "react-icons/bs";
 import styles from "./Chat.module.scss";
 import { v4 as uuid } from "uuid";
+import { IMessageData } from "@backend/interfaces";
 
 const timeStamp = () => {
   const date = new Date(Date.now());
@@ -19,14 +20,17 @@ const timeStamp = () => {
   }:${mins}:${sec} ${hours < 12 ? "AM" : "PM"}`;
 };
 
-const Chat = ({ type, check = false }) => {
+const Chat: FC<{ type: string; check?: boolean }> = ({
+  type,
+  check = false,
+}) => {
   const socket = useSocket();
   const { room } = useRoom();
   const { user } = useName();
   const { currentRound, word, isTurn, turn } = useRounds();
-  const [message, setMessage] = useState("");
-  const [messageList, setMessageList] = useState([]);
-  const chatRef = useRef(null);
+  const [message, setMessage] = useState<string>("");
+  const [messageList, setMessageList] = useState<IMessageData[]>([]);
+  const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     socket.on(
@@ -38,11 +42,13 @@ const Chat = ({ type, check = false }) => {
   }, [socket]);
 
   useEffect(() => {
-    chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
   }, [messageList]);
 
   const checkMessage = () => {
-    if (message.toLowerCase() === word.word.toLowerCase()) {
+    if (word.word && message.toLowerCase() === word.word.toLowerCase()) {
       const matchedWordData = {
         room,
         user,
@@ -59,7 +65,7 @@ const Chat = ({ type, check = false }) => {
     }
   }, [currentRound]);
 
-  const sendMessage = async (e) => {
+  const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (message !== "") {
       const messageData = {

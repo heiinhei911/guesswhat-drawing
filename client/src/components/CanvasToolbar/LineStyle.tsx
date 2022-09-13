@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useCanvas } from "../../contexts/CanvasProperties";
 import styles from "./LineStyle.module.scss";
 import { MdArrowDropDown } from "react-icons/md";
 import { v4 as uuid } from "uuid";
 
-const Line = ({ style, color }) => {
+const Line: FC<{ style: string; color?: string }> = ({ style, color }) => {
   return (
     <hr
       className={styles["line-style-display"]}
@@ -18,13 +18,13 @@ const Line = ({ style, color }) => {
 
 const LineStyle = () => {
   const { color, lineStyle, setLineStyle } = useCanvas();
-  const [lineMenu, setLineMenu] = useState(false);
+  const [lineMenu, setLineMenu] = useState<boolean>(false);
 
   const toggleLineMenu = () => {
     setLineMenu((prevLineMenu) => !prevLineMenu);
   };
 
-  const updateLineStyle = (style) => {
+  const updateLineStyle = (style: string) => {
     setLineStyle(style);
     toggleLineMenu();
   };

@@ -1,7 +1,8 @@
+import { FC } from "react";
 import styles from "./EndScreen.module.scss";
 import PlayerList from "./PlayerList";
 
-const EndScreen = ({ returnHome }) => {
+const EndScreen: FC<{ returnHome: () => void }> = ({ returnHome }) => {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Game Over!</h2>

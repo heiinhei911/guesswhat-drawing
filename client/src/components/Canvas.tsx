@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, MouseEvent } from "react";
 import { useSocket } from "../contexts/SocketContext";
 import { useCanvas } from "../contexts/CanvasProperties";
 import { useRoom } from "../contexts/RoomContext";
@@ -11,6 +11,7 @@ import {
   updateMousePos,
   clearCanvas,
 } from "../helpers/canvas_setup";
+import { ICanvasData, ICanvasDataClear } from "@backend/interfaces";
 import styles from "./Canvas.module.scss";
 import { MAX_CANVAS_SIZE } from "../styles/_constants";
 import variables from "../styles/_variables.scss";
@@ -32,15 +33,15 @@ const Canvas = () => {
   } = useCanvas();
   const { currentRound, isTurn } = useRounds();
 
-  const canvasRef = useRef(null);
-  const ctxRef = useRef(null);
-  const cursorRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const cursorRef = useRef<MouseEvent | null>(null);
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const canvasSize = getSmallerScreenLength();
 
-  const [inCanvas, setInCanvas] = useState(false);
-  const [mouseX, setMouseX] = useState(null);
-  const [mouseY, setMouseY] = useState(null);
+  const [inCanvas, setInCanvas] = useState<boolean>(false);
+  const [mouseX, setMouseX] = useState<number>(0);
+  const [mouseY, setMouseY] = useState<number>(0);
 
   useEffect(() => {
     // socket.on("left_room", () => {
@@ -85,12 +86,14 @@ const Canvas = () => {
       } else {
         const newCtxRef = canvasData.ctxRef;
         if (mode !== canvasData.mode) setMode(canvasData.mode);
-        ctxRef.current.strokeStyle = newCtxRef.strokeStyle;
-        ctxRef.current.lineWidth = newCtxRef.lineWidth;
-        if (newCtxRef.lineDash === "dashed") {
-          ctxRef.current.setLineDash([8, 8]);
-        } else {
-          ctxRef.current.setLineDash([]);
+        if (ctxRef.current) {
+          ctxRef.current.strokeStyle = newCtxRef?.strokeStyle;
+          ctxRef.current.lineWidth = newCtxRef?.lineWidth;
+          if (newCtxRef?.lineDash === "dashed") {
+            ctxRef.current.setLineDash([8, 8]);
+          } else {
+            ctxRef.current.setLineDash([]);
+          }
         }
       }
     });
@@ -98,54 +101,64 @@ const Canvas = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const scaleIndex =
-      canvasSize < MAX_CANVAS_SIZE ? MAX_CANVAS_SIZE / canvasSize : 1;
-    const scaledCanvasSize = canvasSize * scaleIndex;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      const scaleIndex =
+        canvasSize < MAX_CANVAS_SIZE ? MAX_CANVAS_SIZE / canvasSize : 1;
+      const scaledCanvasSize = canvasSize * scaleIndex;
 
-    ctx.scale(scaleIndex, scaleIndex);
-    canvas.width = scaledCanvasSize;
-    canvas.height = scaledCanvasSize;
+      if (ctx) {
+        ctx.scale(scaleIndex, scaleIndex);
+        canvas.width = scaledCanvasSize;
+        canvas.height = scaledCanvasSize;
 
-    // canvas.style.width = `${canvasSize}px`;
-    // canvas.style.height = `${canvasSize}px`;
+        // canvas.style.width = `${canvasSize}px`;
+        // canvas.style.height = `${canvasSize}px`;
 
-    ctx.lineCap = "round";
-    ctxRef.current = ctx;
-    // ctx.beginPath();
-    // // ctx.fillStyle = "#000000";
-    // ctx.arc(x, 100, 40, 0, 2 * Math.PI);
-    // ctx.fill();
-    // x++;
-    // ctx.stroke();
-    // requestAnimationFrame(render);
-    // render();
+        ctx.lineCap = "round";
+        ctxRef.current = ctx;
+      }
+      // ctx.beginPath();
+      // // ctx.fillStyle = "#000000";
+      // ctx.arc(x, 100, 40, 0, 2 * Math.PI);
+      // ctx.fill();
+      // x++;
+      // ctx.stroke();
+      // requestAnimationFrame(render);
+      // render();
+    }
   }, []);
 
   useEffect(() => {
-    if (mode === "pen") {
-      ctxRef.current.strokeStyle = color;
-    } else {
-      ctxRef.current.strokeStyle = variables.canvasBkgColor;
+    if (ctxRef.current) {
+      if (mode === "pen") {
+        ctxRef.current.strokeStyle = color;
+      } else {
+        ctxRef.current.strokeStyle = variables.canvasBkgColor;
+      }
     }
   }, [color, mode]);
 
   useEffect(() => {
-    ctxRef.current.lineWidth = strokeSize[0] + 2;
+    if (ctxRef.current) {
+      ctxRef.current.lineWidth = strokeSize[0] + 2;
+    }
   }, [strokeSize]);
 
   useEffect(() => {
-    if (lineStyle === "dashed") {
-      ctxRef.current.setLineDash([8, 8]);
-    } else {
-      ctxRef.current.setLineDash([]);
+    if (ctxRef.current) {
+      if (lineStyle === "dashed") {
+        ctxRef.current.setLineDash([8, 8]);
+      } else {
+        ctxRef.current.setLineDash([]);
+      }
     }
   }, [lineStyle]);
 
   useEffect(() => {
     if (clear) {
       const sendCanvasRef = async () => {
-        const canvasData = { room, clear };
+        const canvasData: ICanvasDataClear = { room, clear };
         await socket.emit("send_canvasRef", canvasData);
       };
       sendCanvasRef().catch((error) => console.error(error));
@@ -155,20 +168,22 @@ const Canvas = () => {
   }, [clear]);
 
   useEffect(() => {
-    const sendCanvasRef = async () => {
+    const sendCanvasRef = () => {
       const current = ctxRef.current;
-      const canvasData = {
-        ctxRef: {
-          strokeStyle: current.strokeStyle,
-          lineWidth: current.lineWidth,
-          lineDash: lineStyle,
-        },
-        mode,
-        room,
-      };
-      await socket.emit("send_canvasRef", canvasData);
+      if (current) {
+        const canvasData: ICanvasData = {
+          ctxRef: {
+            strokeStyle: current.strokeStyle,
+            lineWidth: current.lineWidth,
+            lineDash: lineStyle,
+          },
+          mode,
+          room,
+        };
+        socket.emit("send_canvasRef", canvasData);
+      }
+      sendCanvasRef();
     };
-    sendCanvasRef().catch((error) => console.error(error));
   }, [color, mode, strokeSize, lineStyle]);
 
   useEffect(() => {
@@ -230,8 +245,12 @@ const Canvas = () => {
         <div
           className={styles["canvas-cursor"]}
           style={{
-            top: mouseY + cursorRef.current.target.offsetTop,
-            left: mouseX + cursorRef.current.target.offsetLeft,
+            top:
+              mouseY +
+              (cursorRef.current?.target as HTMLCanvasElement).offsetTop,
+            left:
+              mouseX +
+              (cursorRef.current?.target as HTMLCanvasElement).offsetLeft,
             height: `${strokeSize[1]}rem`,
             width: `${strokeSize[1]}rem`,
             backgroundColor:

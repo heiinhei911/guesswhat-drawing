@@ -5,8 +5,8 @@ import styles from "./Timer.module.scss";
 
 const Timer = () => {
   const { roundDuration, roundEnd, setRoundEnd } = useRounds();
-  const [minutes, setMinutes] = useState(roundDuration);
-  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState<number>(roundDuration);
+  const [seconds, setSeconds] = useState<number>(0);
 
   useEffect(() => {
     if (roundEnd) {
