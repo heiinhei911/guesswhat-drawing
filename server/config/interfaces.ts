@@ -63,18 +63,16 @@ interface IWordList {
   category: string;
 }
 
-interface ICanvasData {
+interface ICanvasData extends IRoom {
   ctxRef: {
     strokeStyle: string | CanvasGradient | CanvasPattern;
     lineWidth: number;
     lineDash: string;
   };
   mode: string;
-  room: string;
 }
 
-interface ICanvasDataClear {
-  room: string;
+interface ICanvasDataClear extends IRoom {
   clear: boolean;
 }
 

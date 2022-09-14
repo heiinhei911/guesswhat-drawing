@@ -87,9 +87,9 @@ const Canvas = () => {
         const newCtxRef = canvasData.ctxRef;
         if (mode !== canvasData.mode) setMode(canvasData.mode);
         if (ctxRef.current) {
-          ctxRef.current.strokeStyle = newCtxRef?.strokeStyle;
-          ctxRef.current.lineWidth = newCtxRef?.lineWidth;
-          if (newCtxRef?.lineDash === "dashed") {
+          ctxRef.current.strokeStyle = newCtxRef.strokeStyle;
+          ctxRef.current.lineWidth = newCtxRef.lineWidth;
+          if (newCtxRef.lineDash === "dashed") {
             ctxRef.current.setLineDash([8, 8]);
           } else {
             ctxRef.current.setLineDash([]);
@@ -182,8 +182,8 @@ const Canvas = () => {
         };
         await socket.emit("send_canvasRef", canvasData);
       }
-      sendCanvasRef();
     };
+    sendCanvasRef().catch((error) => console.error(error));
   }, [color, mode, strokeSize, lineStyle]);
 
   useEffect(() => {
