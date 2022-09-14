@@ -147,7 +147,6 @@ const getClickCoords = (e: any) => {
 };
 
 const getDrawingData = (e: any, id: string) => {
-  console.log(e);
   const nativeEvent = e.nativeEvent;
 
   return {

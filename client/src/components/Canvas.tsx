@@ -168,7 +168,7 @@ const Canvas = () => {
   }, [clear]);
 
   useEffect(() => {
-    const sendCanvasRef = () => {
+    const sendCanvasRef = async () => {
       const current = ctxRef.current;
       if (current) {
         const canvasData: ICanvasData = {
@@ -180,7 +180,7 @@ const Canvas = () => {
           mode,
           room,
         };
-        socket.emit("send_canvasRef", canvasData);
+        await socket.emit("send_canvasRef", canvasData);
       }
       sendCanvasRef();
     };
