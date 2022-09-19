@@ -116,6 +116,7 @@ const SetRound = () => {
               onChange={(e) =>
                 validateRoundInputs(parseInt(e.target.value), "rounds")
               }
+              data-testid="no-rounds"
             />
             {error === "rounds" && (
               <span className={styles.error}>
@@ -134,6 +135,7 @@ const SetRound = () => {
               onChange={(e) =>
                 validateRoundInputs(parseInt(e.target.value), "duration")
               }
+              data-testid="duration-rounds"
             />
             {error === "duration" && (
               <span className={styles.error}>

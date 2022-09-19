@@ -10,6 +10,7 @@ import {
 import connectSocket from "./config/socket";
 import connectDB from "./config/db";
 import router from "./routes/words";
+import socketRouter from "./routes/socket";
 const app = express();
 app.use(cors());
 const server = http.createServer(app);
@@ -19,6 +20,7 @@ const port = process.env.PORT || 3001;
 app.get("/", (req: Request, res: Response) => res.send("Hello world"));
 
 app.use("/api/words", router);
+app.use("/socket", socketRouter);
 
 server.listen(port, () => {
   console.log(`Server running on ${port}`);

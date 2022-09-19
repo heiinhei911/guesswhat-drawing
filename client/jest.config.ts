@@ -1,17 +1,26 @@
-import type { Config } from "@jest/types";
+import type { Config } from "jest";
+import esm from "socket.io-client";
 
-const config: Config.InitialOptions = {
+const esModules = ["uuid", "nanoid"].join("|");
+
+const config: Config = {
   preset: "ts-jest",
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   verbose: true,
-  automock: true,
-  roots: ["<rootDir>/client/src"],
-  setupFilesAfterEnv: [
-    "@testing-library/react/cleanup-after-each",
-    "@testing-library/jest-dom/extend-expect",
-  ],
+  roots: ["<rootDir>/src"],
+  setupFilesAfterEnv: ["<rootDir>/jest.env.ts"],
   transform: {
     "^.+\\.tsx?$": "ts-jest",
   },
+  // fakeTimers: {
+  //   enableGlobally: true,
+  // },
+  moduleNameMapper: {
+    "\\.(css|less|scss|sss|styl)$": "<rootDir>/node_modules/jest-css-modules",
+    "^nanoid(/(.*)|$)": "nanoid$1",
+    "^uuid(/(.*)|$)": "uuid$1",
+    // "\\.(css|less|scss|sss|styl)$": "<rootDir>/node_modules/jest-css-modules",
+  },
+  transformIgnorePatterns: [`/node_modules/(?!${esModules})`],
 };
 export default config;

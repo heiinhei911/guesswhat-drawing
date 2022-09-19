@@ -29,6 +29,7 @@ const Home = () => {
         joinRoom(socket, room, user);
         navigate(room, { state: { fromHome: true } });
       } else {
+        setRoomError(true);
         console.log("Home - room doesnt exists");
       }
     });
@@ -56,6 +57,7 @@ const Home = () => {
 
   const joinExistingRoom = () => {
     if (room.length !== 10) {
+      console.log("Invalid Room ID length");
       return setRoomError(true);
     }
 

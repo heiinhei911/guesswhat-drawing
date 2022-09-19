@@ -20,25 +20,6 @@ const PlayerList: FC<{ type: string }> = ({ type }) => {
   }, []);
 
   useEffect(() => {
-    // if (clientsData.clients[0].score) {
-    //   clientsData.clients.forEach((client) => {
-    //     setLoading(true);
-    //     if (highest.length === 0 || client.score > highest[0].score) {
-    //       setHighest([client]);
-    //     } else if (client.score === highest[0].score) {
-    //       let found = false;
-    //       for (const player of highest) {
-    //         if (player.id === client.id) {
-    //           found = true;
-    //           break;
-    //         }
-    //       }
-    //       if (!found) setHighest((prevHighest) => [...prevHighest, client]);
-    //     }
-    //     setLoading(false);
-    //   });
-    // }
-
     socket.on("get_room_clients", (clientsData) => {
       setPlayerCount(clientsData.total);
       setPlayers(clientsData.clients);
