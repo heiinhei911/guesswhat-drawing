@@ -1,8 +1,14 @@
 import express, { Request, Response } from "express";
+import * as dotenv from "dotenv";
+dotenv.config();
 import { io, Socket } from "socket.io-client";
 const socketRouter = express.Router();
 
-const socket: Socket = io("http://localhost:3001");
+const socket: Socket = io(
+  process.env.ENV === "PRODUCTION"
+    ? "https://guesswhat-drawing.herokuapp.com"
+    : "http://192.168.68.112:3001"
+);
 const testUser = "Test User";
 
 // @route GET api/words
