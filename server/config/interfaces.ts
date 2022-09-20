@@ -1,6 +1,10 @@
-import { ChatTypes } from "../../client/src/enums";
 import * as dotenv from "dotenv";
 dotenv.config();
+
+enum ChatTypes {
+  chat,
+  guesses,
+}
 
 interface IRoom {
   room: string;
