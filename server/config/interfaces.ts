@@ -1,4 +1,4 @@
-import { ChatTypes } from "@frontend/enums";
+import { ChatTypes } from "../../client/src/enums";
 import * as dotenv from "dotenv";
 dotenv.config();
 
