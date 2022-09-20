@@ -5,8 +5,9 @@ import styles from "./PlayerList.module.scss";
 import { useRoom } from "../contexts/RoomContext";
 import { useRounds } from "../contexts/RoundContext";
 import { IClientsList } from "@backend/interfaces";
+import { PlayerListTypes } from "../enums";
 
-const PlayerList: FC<{ type: string }> = ({ type }) => {
+const PlayerList: FC<{ type: PlayerListTypes }> = ({ type }) => {
   const socket = useSocket();
   const { endScreen } = useRounds();
   const { room, creatorId } = useRoom();
@@ -42,7 +43,7 @@ const PlayerList: FC<{ type: string }> = ({ type }) => {
         <span>
           {player.username} {player.id === creatorId && "(creator)"}
         </span>
-        {type !== "player" && <span>{player.score}</span>}
+        {type !== PlayerListTypes.player && <span>{player.score}</span>}
       </span>
     </li>
   ));
@@ -58,8 +59,10 @@ const PlayerList: FC<{ type: string }> = ({ type }) => {
       )}
       <div className={styles.PlayerList}>
         <div className={styles.header}>
-          <span>{type !== "player" ? "Scoreboard" : "Player List"}</span>
-          <span>{type !== "player" ? "" : playerCount}</span>
+          <span>
+            {type !== PlayerListTypes.player ? "Scoreboard" : "Player List"}
+          </span>
+          <span>{type !== PlayerListTypes.player ? "" : playerCount}</span>
         </div>
         <ul className={styles.list}>{PlayerList}</ul>
       </div>

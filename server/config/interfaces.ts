@@ -1,3 +1,4 @@
+import { ChatTypes } from "@frontend/enums";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -32,7 +33,7 @@ interface IMessageData extends IRoom {
   author: string;
   message: string;
   time: string;
-  type: string;
+  type: ChatTypes;
 }
 
 interface IMatchedWordData extends IRoom {

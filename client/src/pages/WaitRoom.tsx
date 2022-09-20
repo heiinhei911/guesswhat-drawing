@@ -12,6 +12,7 @@ import SetRound from "../components/SetRound";
 import styles from "./WaitRoom.module.scss";
 import { LOBBY } from "../styles/_constants";
 import EndScreen from "../components/EndScreen";
+import { ChatTypes, PlayerListTypes } from "../enums";
 
 interface ILocationState {
   fromHome: boolean;
@@ -104,10 +105,10 @@ const WaitRoom: FC<{ setId: Dispatch<SetStateAction<string>> }> = ({
         <div className={styles.waitroom}>
           <div className={styles.container}>
             <div className={styles.content}>
-              <Chat type="chat" />
+              <Chat type={ChatTypes.chat} />
               <SetRound />
             </div>
-            <PlayerList type="player" />
+            <PlayerList type={PlayerListTypes.player} />
           </div>
         </div>
       )}

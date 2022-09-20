@@ -8,6 +8,7 @@ import { BsPersonCircle } from "react-icons/bs";
 import styles from "./Chat.module.scss";
 import { v4 as uuid } from "uuid";
 import { IMessageData } from "@backend/interfaces";
+import { ChatTypes } from "../enums";
 
 const timeStamp = () => {
   const date = new Date(Date.now());
@@ -20,7 +21,7 @@ const timeStamp = () => {
   }:${mins}:${sec} ${hours < 12 ? "AM" : "PM"}`;
 };
 
-const Chat: FC<{ type: string; check?: boolean }> = ({
+const Chat: FC<{ type: ChatTypes; check?: boolean }> = ({
   type,
   check = false,
 }) => {
@@ -34,7 +35,7 @@ const Chat: FC<{ type: string; check?: boolean }> = ({
 
   useEffect(() => {
     socket.on(
-      type === "guesses" ? "receive_guess" : "receive_chat",
+      type === ChatTypes.guesses ? "receive_guess" : "receive_chat",
       (messageData) => {
         setMessageList((prevMessageList) => [...prevMessageList, messageData]);
       }
@@ -77,7 +78,7 @@ const Chat: FC<{ type: string; check?: boolean }> = ({
       };
 
       await socket.emit(
-        type === "guesses" ? "send_guess" : "send_chat",
+        type === ChatTypes.guesses ? "send_guess" : "send_chat",
         messageData
       );
       setMessageList((prevMessageList) => [...prevMessageList, messageData]);
@@ -119,7 +120,7 @@ const Chat: FC<{ type: string; check?: boolean }> = ({
 
   return (
     <div className={styles.chat}>
-      <span>{type === "guesses" ? "Guesses" : "Chat Room"}</span>
+      <span>{type === ChatTypes.guesses ? "Guesses" : "Chat Room"}</span>
       <div className={styles.messages} ref={chatRef}>
         {messageDisplay}
       </div>

@@ -9,6 +9,7 @@ import Timer from "./Timer";
 import styles from "./Game.module.scss";
 import PlayerList from "./PlayerList";
 import { IRoundEnd } from "../contexts/RoundContext";
+import { ChatTypes, PlayerListTypes } from "../enums";
 
 const Game = () => {
   const socket = useSocket();
@@ -94,11 +95,11 @@ const Game = () => {
                 {isTurn && <CanvasToolbar />}
               </div>
             </div>
-            <PlayerList type="score" />
+            <PlayerList type={PlayerListTypes.score} />
           </div>
           <div className={styles.chats}>
-            <Chat check={true} type="guesses" />
-            <Chat type="chat" />
+            <Chat check={true} type={ChatTypes.guesses} />
+            <Chat type={ChatTypes.chat} />
           </div>
         </div>
       </div>
