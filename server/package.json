@@ -24,7 +24,7 @@
   "devDependencies": {
     "socket.io-client": "^4.5.2"
   },
-  "_moduleAliases":{
-    "@frontend":"../client/src"
+  "_moduleAliases": {
+    "@frontend": "../client/src"
   }
 }
