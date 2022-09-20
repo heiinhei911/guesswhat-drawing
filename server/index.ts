@@ -1,4 +1,3 @@
-import "module-alias/register";
 import express, { Request, Response } from "express";
 import { Server } from "socket.io";
 import http from "http";
