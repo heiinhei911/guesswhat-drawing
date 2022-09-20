@@ -51,9 +51,12 @@ describe("join an existing room and perform actions inside waitroom", () => {
   });
 });
 
-// describe("start a round & perform actions in game", () => {
-//   it("start a round", () => {
-//     console.log(cy.createNewRoom());
-//     cy.createSocket(cy.createNewRoom());
-//   });
-// });
+describe("start a round & perform actions in game", () => {
+  beforeEach(() => {
+    cy.startRound();
+  });
+
+  it("start a round", () => {});
+
+  it("start a round and take a wrong guess", () => {});
+});

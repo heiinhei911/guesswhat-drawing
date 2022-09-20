@@ -39,21 +39,21 @@
 
 declare namespace Cypress {
   interface Chainable {
-    createSocket(roomId: string): Chainable<void>;
-    createNewRoom(): Chainable<string>;
+    createSocket(roomId: string | JQuery<HTMLElement>): Chainable<void>;
+    createNewRoom(): Chainable<void>;
     joinExistingRoom(roomId: string): Chainable<void>;
+    startRound(): Chainable<void>;
   }
 }
 
-Cypress.Commands.add("createSocket", (roomId: string) => {
+Cypress.Commands.add("createSocket", (roomId: string | JQuery<HTMLElement>) => {
   cy.request(`http://localhost:3001/socket/join?roomid=${roomId}`);
 });
 
 Cypress.Commands.add("createNewRoom", () => {
   cy.get('input[placeholder="Your name..."]').type("Steve");
   cy.contains("button", /create/i).click();
-  cy.contains(/waitroom/i);
-  return cy.url();
+  cy.contains(/waitroom/i).should("be.visible");
 });
 
 Cypress.Commands.add("joinExistingRoom", (roomId: string) => {
@@ -64,4 +64,12 @@ Cypress.Commands.add("joinExistingRoom", (roomId: string) => {
   cy.get(
     "#root > div > div:nth-child(2) > div > div:nth-child(2) > div"
   ).contains("2");
+});
+
+Cypress.Commands.add("startRound", () => {
+  cy.createNewRoom();
+  cy.location("pathname").invoke("split", "/").its(1).as("tempRoomId");
+  cy.get("@tempRoomId").then((tempRoomId) => cy.createSocket(tempRoomId));
+  cy.contains(/start game/i).click();
+  cy.get("canvas", { timeout: 6000 }).should("be.visible");
 });
