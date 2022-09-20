@@ -11,6 +11,7 @@ import connectSocket from "./config/socket";
 import connectDB from "./config/db";
 import router from "./routes/words";
 // import socketRouter from "./routes/socket";
+import "module-alias/register";
 const app = express();
 app.use(cors());
 const server = http.createServer(app);

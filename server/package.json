@@ -14,6 +14,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",
     "express": "^4.18.1",
+    "module-alias": "^2.2.2",
     "mongodb": "^4.9.1",
     "mongoose": "^6.6.1",
     "socket.io": "^4.5.2",
@@ -22,5 +23,8 @@
   },
   "devDependencies": {
     "socket.io-client": "^4.5.2"
+  },
+  "_moduleAliases":{
+    "@frontend":"../client/src"
   }
 }
