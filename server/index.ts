@@ -20,7 +20,7 @@ const port = process.env.PORT || 3001;
 app.get("/", (req: Request, res: Response) => res.send("Hello world"));
 
 app.use("/api/words", router);
-app.use("/socket", socketRouter);
+app.use("/socket", socketRouter); // for testing purposes only
 
 server.listen(port, () => {
   console.log(`Server running on ${port}`);

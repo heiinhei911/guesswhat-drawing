@@ -9,6 +9,10 @@ Demo GIF:
 
 ![Demo GIF](./client/assets/demo.gif)
 
+## Flowchart
+
+![flow diagram of guesswhat](./client/assets/flowdiagram.jpg)
+
 ## How to Play
 
 Firstly, start off by navigating to the website. Once the page has loaded, you can enter your name in the "Enter your name:" field. After that, you can either create or join a room.
@@ -78,7 +82,9 @@ On the canvas, you can:
 
 Frontend: React, React Router, SASS Modules, TypeScript
 
-Backend: Socket.io, NodeJS, Express, MongoDB, TypeScript
+Backend: Socket.io, NodeJS, Express, CORS, MongoDB, TypeScript
+
+Testing: React Testing Library, Jest, Cypress
 
 ## Credits
 
