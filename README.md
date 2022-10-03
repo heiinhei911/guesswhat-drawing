@@ -1,21 +1,21 @@
 # Guess What - Multiplayer Word Guessing Game
 
 A word-guessing multiplayer game that challenges players to guess a series of words based on the drawings from other players over multiple rounds
-Each player takes turns guessing or drawing after one another. The player with the highest score at the end of the game wins
+Each player takes turns guessing or drawing after one another. The player with the highest score at the end of the game wins.
 
-Check out my bullet board [https://heiinhei911.github.io/bulletin-board](https://heiinhei911.github.io/bulletin-board) to see tracked bugs of this project.
+Check out my bulletin board project [https://heiinhei911.github.io/bulletin-board](https://heiinhei911.github.io/bulletin-board) to see tracked bugs of this project.
 
 Demo GIF:
 
 ![Demo GIF](./client/assets/demo.gif)
 
-## Flowchart
+## Application Architecture
 
 ![flow diagram of guesswhat](./client/assets/flowdiagram.jpg)
 
 ## How to Play
 
-Firstly, start off by navigating to the website. Once the page has loaded, you can enter your name in the "Enter your name:" field. After that, you can either create or join a room.
+Start off by navigating to the website. Once the page has loaded, you can enter your name in the "Enter your name:" field. After that, you can either create or join a room.
 
 ### Creating/Joining a Room
 
@@ -25,26 +25,26 @@ Note: the ID of the newly created room will be automatically copied to your clip
 
 If you already have a room ID that somebody else has created, you can either:
 
-- copy the code and paste it into the "Enter a room ID" field and click "Join"
-- Navigate directly to "https://guesswhat-drawing.netlify.app/{roomID}" to jump straight into a room. (You will be asked to enter a display name if you do not already have a name set)
+- copy the ID and paste it into the "Enter a room ID" field and click "Join"
+- or navigate directly to "https://guesswhat-drawing.netlify.app/{roomID}" to jump straight into a room. (You will be asked to enter a display name if you do not already have one set)
 
 ### Waitroom
 
-Either way, you will be taken to the "Waitroom" page. Here the creator of the room can configure how they want to game to be set up. They can set the number of rounds (how many rounds the game will run for) and the duration of each round (how long each round will last). The creator can start the game once all the settings have been configured.
+The creator of the room can configure how they want the game to be set up. They can customize the number of rounds (how many rounds the game will run for) and the duration of each round (how long each round will last). The creator can start the game once all the settings have been configured.
 
 ### Gameplay
 
-Once the game has started, a randomized list of words will be generated. Players will take turns guessing or drawing on the canvas in a randomized order.
+Once a game has begun, a randomized list of words will be generated. Players will take turns guessing in the chat or drawing on the canvas in a randomized order.
 
-When it is a player's turn to draw, a word will be display to this player only. This player will have to try their best to describe the hidden word by drawing as best as they can without directly giving away the word. Other players will try to guess the hidden word. A round could end in three ways:
+When it is a player's turn to draw, a word will be displayed to this player only. This player will have to try their best to describe the hidden word by drawing on the canvas as best as they can without directly giving away the word. Other players can then try to guess the hidden word based on what's being drawn. A round could end in one of three ways:
 
-- When one player guesses the hidden word of the round (one point to both the person drawing and the guesser)
+- When one player guesses the hidden word of the round (two points for the drawer and one point for the guesser)
 - When no one in the room manages to guess the hidden word [when the timer runs out] (no points for anyone)
 - When the player disconnects from the room when it is their turn (the turn will be skipped)
 
-The game repeats for however many rounds \(with each round lasting for however long\) that the creator has set at the beginning in the waitroom.
+The game repeats for however many rounds that the creator has set at the beginning in the waitroom.
 
-Finally, whoever has the most points wins the game. After a review screen of the game, all the players will be taken back to the lobby.
+Finally, whoever has the highest point wins the game (winner could be one person or multiple people if there's a tie). After a review screen of the game, all the players will be taken back to the lobby.
 
 ## Features
 
