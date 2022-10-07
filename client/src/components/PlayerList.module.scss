@@ -23,7 +23,6 @@
   flex-basis: 25%;
 
   @include var.mobile {
-    display: none;
     flex-basis: 100%;
     width: 100%;
   }

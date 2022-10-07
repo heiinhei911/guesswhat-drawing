@@ -57,7 +57,7 @@ const PlayerList: FC<{ type: PlayerListTypes }> = ({ type }) => {
             : `The winner is ${highest[0].username}!`}
         </h3>
       )}
-      <div className={styles.PlayerList}>
+      <div className={styles.playerlist}>
         <div className={styles.header}>
           <span>
             {type !== PlayerListTypes.player ? "Scoreboard" : "Player List"}
