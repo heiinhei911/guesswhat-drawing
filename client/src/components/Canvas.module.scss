@@ -2,6 +2,7 @@
 
 .container {
   user-select: none;
+  width: 100%;
 }
 
 .canvas {
@@ -18,7 +19,7 @@
   border: 1px solid black;
 }
 
-.canvas-cursor {
+.cursor {
   position: absolute;
   pointer-events: none;
   border-radius: 5px;

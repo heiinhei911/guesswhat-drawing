@@ -49,35 +49,13 @@ const Canvas = () => {
     // });
 
     socket.on("receive_startDrawing", (drawingData) => {
-      startDrawing(
-        drawingData.e,
-        false,
-        ctxRef,
-        setIsDrawing,
-        socket,
-        drawingData.room,
-        drawingData.scaleIndex
-      );
+      startDrawing(drawingData, false, ctxRef, setIsDrawing, socket);
     });
     socket.on("receive_drawing", (drawingData) => {
-      draw(
-        drawingData.e,
-        false,
-        ctxRef,
-        socket,
-        drawingData.room,
-        drawingData.scaleIndex
-      );
+      draw(drawingData, false, ctxRef, socket);
     });
     socket.on("receive_finishDrawing", (drawingData) => {
-      finishDrawing(
-        drawingData.e,
-        false,
-        ctxRef,
-        setIsDrawing,
-        socket,
-        drawingData.room
-      );
+      finishDrawing(drawingData, false, ctxRef, setIsDrawing, socket);
     });
 
     socket.on("receive_canvasRef", (canvasData) => {
@@ -168,22 +146,19 @@ const Canvas = () => {
   }, [clear]);
 
   useEffect(() => {
-    const sendCanvasRef = async () => {
-      const current = ctxRef.current;
-      if (current) {
-        const canvasData: ICanvasData = {
-          ctxRef: {
-            strokeStyle: current.strokeStyle,
-            lineWidth: current.lineWidth,
-            lineDash: lineStyle,
-          },
-          mode,
-          room,
-        };
-        await socket.emit("send_canvasRef", canvasData);
-      }
-    };
-    sendCanvasRef().catch((error) => console.error(error));
+    const current = ctxRef.current;
+    if (current) {
+      const canvasData: ICanvasData = {
+        ctxRef: {
+          strokeStyle: current.strokeStyle,
+          lineWidth: current.lineWidth,
+          lineDash: lineStyle,
+        },
+        mode,
+        room,
+      };
+      socket.emit("send_canvasRef", canvasData);
+    }
   }, [color, mode, strokeSize, lineStyle]);
 
   useEffect(() => {
@@ -200,7 +175,7 @@ const Canvas = () => {
   }, [currentRound]);
 
   return (
-    <div>
+    <div className={styles.container}>
       <canvas
         ref={canvasRef}
         className={styles.canvas}
@@ -243,7 +218,7 @@ const Canvas = () => {
       </canvas>
       {inCanvas && (
         <div
-          className={styles["canvas-cursor"]}
+          className={styles.cursor}
           style={{
             top:
               mouseY +

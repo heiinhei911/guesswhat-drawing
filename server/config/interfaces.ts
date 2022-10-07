@@ -85,6 +85,27 @@ interface IGetClients {
   creator?: string;
 }
 
+interface IDrawingData extends IRoom {
+  type: string;
+  // rect: IRectData;
+  target: {
+    offsetLeft: number;
+    offsetTop: number;
+  };
+  nativeEvent: {
+    offsetX?: number;
+    offsetY?: number;
+    changedTouches?: [{ pageX: number; pageY: number }];
+  };
+  // touches?: [{ clientX: number; clientY: number }];
+  // nativeEvent?: {
+  //   offsetX: number;
+  //   offsetY: number;
+  // };
+  scaleIndex: number;
+  // canvasSize: number;
+}
+
 interface ClientToServerEvents {
   join_room_check: (room: string) => void;
   join_room: (joinRoomData: IJoinRoomData) => void;
@@ -99,9 +120,9 @@ interface ClientToServerEvents {
   matched_word: (matchedWordData: IMatchedWordData) => void;
   player_left: (playerData: IPlayerData) => void;
   send_calculate_score: (room: string) => void;
-  send_startDrawing: (drawingData: any) => void;
-  send_drawing: (drawingData: any) => void;
-  send_finishDrawing: (drawingData: any) => void;
+  send_startDrawing: (drawingData: IDrawingData) => void;
+  send_drawing: (drawingData: IDrawingData) => void;
+  send_finishDrawing: (drawingData: IDrawingData) => void;
   send_canvasRef: (canvasData: ICanvasData | ICanvasDataClear) => void;
   send_chat: (messageData: IMessageData) => void;
   send_guess: (messageData: IMessageData) => void;
@@ -127,9 +148,9 @@ interface ServerToClientEvents {
   }) => void;
   end_of_round: (roundEndData: IPlayerData | IMatchedWordData) => void;
   receive_calculate_score: (scoreData: IClientsList[]) => void;
-  receive_startDrawing: (drawingData: any) => void;
-  receive_drawing: (drawingData: any) => void;
-  receive_finishDrawing: (drawingData: any) => void;
+  receive_startDrawing: (drawingData: IDrawingData) => void;
+  receive_drawing: (drawingData: IDrawingData) => void;
+  receive_finishDrawing: (drawingData: IDrawingData) => void;
   receive_canvasRef: (canvasData: ICanvasData & ICanvasDataClear) => void;
   receive_chat: (messageData: IMessageData) => void;
   receive_guess: (messageData: IMessageData) => void;
@@ -153,7 +174,7 @@ export {
   IJoinRoomData,
   IPlayerData,
   IGameData,
-  // DrawingInterface,
+  IDrawingData,
   ICanvasData,
   ICanvasDataClear,
   IMessageData,

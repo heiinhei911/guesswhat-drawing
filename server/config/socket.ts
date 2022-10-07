@@ -277,15 +277,15 @@ const connectSocket = (
     });
 
     // Canvas Drawing -------------------------------
-    socket.on("send_startDrawing", (drawingData: any) => {
+    socket.on("send_startDrawing", (drawingData: interfaces.IDrawingData) => {
       socket.to(drawingData.room).emit("receive_startDrawing", drawingData);
     });
 
-    socket.on("send_drawing", (drawingData: any) => {
+    socket.on("send_drawing", (drawingData: interfaces.IDrawingData) => {
       socket.to(drawingData.room).emit("receive_drawing", drawingData);
     });
 
-    socket.on("send_finishDrawing", (drawingData: any) => {
+    socket.on("send_finishDrawing", (drawingData: interfaces.IDrawingData) => {
       socket.to(drawingData.room).emit("receive_finishDrawing", drawingData);
     });
 

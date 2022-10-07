@@ -1,15 +1,27 @@
-import { MutableRefObject, Dispatch, SetStateAction } from "react";
+import {
+  MutableRefObject,
+  Dispatch,
+  SetStateAction,
+  MouseEvent,
+  TouchEvent,
+} from "react";
 import { Socket } from "socket.io-client";
 import {
   ServerToClientEvents,
   ClientToServerEvents,
+  IDrawingData,
 } from "@backend/interfaces";
 import { MOBILE_BREAKPOINT, MAX_CANVAS_SIZE } from "../styles/_constants";
+
+interface ICoordsData {
+  x: number;
+  y: number;
+}
 
 const getSmallerScreenLength = () => {
   const width = window.innerWidth;
   const height = window.innerHeight;
-  let smaller = null;
+  let smaller: number | null = null;
 
   if (width > height) {
     smaller = height * 0.8;
@@ -28,8 +40,20 @@ const canvasSize = getSmallerScreenLength();
 const scaleIndex =
   canvasSize < MAX_CANVAS_SIZE ? MAX_CANVAS_SIZE / canvasSize : 1;
 
+const isSentDrawingData = (
+  e:
+    | TouchEvent<HTMLCanvasElement>
+    | MouseEvent<HTMLCanvasElement>
+    | IDrawingData
+): e is IDrawingData => {
+  return (
+    (e as IDrawingData).room !== undefined &&
+    (e as IDrawingData).scaleIndex !== undefined
+  );
+};
+
 const updateMousePos = (
-  e: any,
+  e: MouseEvent<HTMLCanvasElement>,
   setMousePosX: Dispatch<SetStateAction<number>>,
   setMousePosY: Dispatch<SetStateAction<number>>
 ) => {
@@ -39,125 +63,154 @@ const updateMousePos = (
 };
 
 const startDrawing = (
-  e: any,
+  e:
+    | TouchEvent<HTMLCanvasElement>
+    | MouseEvent<HTMLCanvasElement>
+    | IDrawingData,
   send: boolean,
   ctxRef: MutableRefObject<CanvasRenderingContext2D | null>,
   setIsDrawing: Dispatch<SetStateAction<boolean>>,
   socket: Socket<ServerToClientEvents, ClientToServerEvents>,
-  id: string,
-  sendScaleIndex = 1
+  id = ""
 ) => {
   const { x, y } = getClickCoords(e);
+  const sendScaleIndex = isSentDrawingData(e) ? e.scaleIndex : 1;
+  const room = isSentDrawingData(e) ? e.room : id;
   // if (e.defaultPrevented === false) e.preventDefault();
-
   setIsDrawing(true);
   if (ctxRef.current) {
     ctxRef.current.beginPath();
-    ctxRef.current.moveTo(x * sendScaleIndex, y * sendScaleIndex);
+    ctxRef.current.moveTo(x, y);
+    // ctxRef.current.moveTo(x * sendScaleIndex, y * sendScaleIndex);
   }
 
-  if (send) sendStartDrawing(e, socket, id);
+  if (send && !isSentDrawingData(e)) sendStartDrawing(e, socket, room);
 };
 
 const finishDrawing = (
-  e: any,
+  e:
+    | TouchEvent<HTMLCanvasElement>
+    | MouseEvent<HTMLCanvasElement>
+    | IDrawingData,
   send: boolean,
   ctxRef: MutableRefObject<CanvasRenderingContext2D | null>,
   setIsDrawing: Dispatch<SetStateAction<boolean>>,
   socket: Socket<ServerToClientEvents, ClientToServerEvents>,
-  id: string
+  id = ""
 ) => {
-  if (e.defaultPrevented === false) e.preventDefault();
+  const room = isSentDrawingData(e) ? e.room : id;
+  if (!isSentDrawingData(e) && e.defaultPrevented === false) e.preventDefault();
   if (ctxRef.current) ctxRef.current.closePath();
   setIsDrawing(false);
 
-  if (send) sendFinishDrawing(e, socket, id);
+  if (send && !isSentDrawingData(e)) sendFinishDrawing(e, socket, room);
 };
 
 const draw = (
-  e: any,
+  e:
+    | TouchEvent<HTMLCanvasElement>
+    | MouseEvent<HTMLCanvasElement>
+    | IDrawingData,
   send: boolean,
   ctxRef: MutableRefObject<CanvasRenderingContext2D | null>,
   socket: Socket<ServerToClientEvents, ClientToServerEvents>,
-  id: string,
-  sendScaleIndex = 1
+  id = ""
 ) => {
   const { x, y } = getClickCoords(e);
-
+  const room = isSentDrawingData(e) ? e.room : id;
+  const sendScaleIndex = isSentDrawingData(e) ? e.scaleIndex : 1;
   // if (e.defaultPrevented === false) e.preventDefault();
   if (ctxRef.current) {
-    ctxRef.current.lineTo(x * sendScaleIndex, y * sendScaleIndex);
+    ctxRef.current.lineTo(x, y);
+    // ctxRef.current.lineTo(x * sendScaleIndex, y * sendScaleIndex);
     ctxRef.current.stroke();
   }
 
-  if (send) sendDrawing(e, socket, id);
+  if (send && !isSentDrawingData(e)) sendDrawing(e, socket, room);
 };
 
-const sendStartDrawing = async (
-  e: any,
+const sendStartDrawing = (
+  e: TouchEvent<HTMLCanvasElement> | MouseEvent<HTMLCanvasElement>,
   socket: Socket<ServerToClientEvents, ClientToServerEvents>,
   id: string
 ) => {
   const drawingData = getDrawingData(e, id);
-  await socket.emit("send_startDrawing", drawingData);
+  socket.emit("send_startDrawing", drawingData);
 };
 
-const sendDrawing = async (
-  e: any,
+const sendDrawing = (
+  e: TouchEvent<HTMLCanvasElement> | MouseEvent<HTMLCanvasElement>,
   socket: Socket<ServerToClientEvents, ClientToServerEvents>,
   id: string
 ) => {
   const drawingData = getDrawingData(e, id);
-  await socket.emit("send_drawing", drawingData);
+  socket.emit("send_drawing", drawingData);
 };
 
-const sendFinishDrawing = async (
-  e: any,
+const sendFinishDrawing = (
+  e: TouchEvent<HTMLCanvasElement> | MouseEvent<HTMLCanvasElement>,
   socket: Socket<ServerToClientEvents, ClientToServerEvents>,
   id: string
 ) => {
-  const drawingData = {
-    e: {
-      type: e.type,
+  const drawingData: IDrawingData = {
+    type: e.type,
+    target: {
+      offsetLeft: 0,
+      offsetTop: 0,
     },
+    nativeEvent: {},
     room: id,
+    scaleIndex: 0,
   };
-  await socket.emit("send_finishDrawing", drawingData);
+  socket.emit("send_finishDrawing", drawingData);
 };
 
-const getClickCoords = (e: any) => {
-  let coords = { x: 0, y: 0 };
+const getClickCoords = (
+  e:
+    | TouchEvent<HTMLCanvasElement>
+    | MouseEvent<HTMLCanvasElement>
+    | IDrawingData
+) => {
+  let coords: ICoordsData = { x: 0, y: 0 };
 
-  if (e.type === "touchstart" || e.type === "touchmove") {
-    const { pageX, pageY } = e.nativeEvent.changedTouches[0];
+  if ("changedTouches" in e.nativeEvent) {
+    if (e.nativeEvent.changedTouches) {
+      const { pageX, pageY } = e.nativeEvent.changedTouches[0];
+      const target = e.target as HTMLCanvasElement;
 
-    coords = {
-      x: (pageX - e.target.offsetLeft) * scaleIndex,
-      y: (pageY - e.target.offsetTop) * scaleIndex,
-    };
+      coords = {
+        x: (pageX - target.offsetLeft) * scaleIndex,
+        y: (pageY - target.offsetTop) * scaleIndex,
+      };
+    }
   } else {
     const { offsetX, offsetY } = e.nativeEvent;
-
-    coords = {
-      x: offsetX,
-      y: offsetY,
-    };
+    if (offsetX && offsetY) {
+      coords = {
+        x: offsetX,
+        y: offsetY,
+      };
+    }
   }
   return coords;
 };
 
-const getDrawingData = (e: any, id: string) => {
+const getDrawingData = (
+  e: TouchEvent<HTMLCanvasElement> | MouseEvent<HTMLCanvasElement>,
+  id: string
+  // rect: IRectData
+): IDrawingData => {
+  const target = e.target as HTMLCanvasElement;
   const nativeEvent = e.nativeEvent;
-
-  return {
-    e: {
-      type: e.type,
-
-      target: {
-        offsetLeft: e.target.offsetLeft,
-        offsetTop: e.target.offsetTop,
-      },
-      nativeEvent: nativeEvent.changedTouches
+  const data: IDrawingData = {
+    type: e.type,
+    // rect,
+    target: {
+      offsetLeft: target.offsetLeft,
+      offsetTop: target.offsetTop,
+    },
+    nativeEvent:
+      "changedTouches" in nativeEvent
         ? {
             changedTouches: [
               {
@@ -167,10 +220,27 @@ const getDrawingData = (e: any, id: string) => {
             ],
           }
         : { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY },
-    },
     room: id,
     scaleIndex,
+    // canvasSize: e.currentTarget.offsetWidth,
   };
+
+  // const insertEventBlock = () => {
+  //   if ("touches" in e) {
+  //     data.e["touches"] = [
+  //       { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY },
+  //     ];
+  //   } else {
+  //     const nativeEvent = e.nativeEvent;
+  //     data.e["nativeEvent"] = {
+  //       offsetX: nativeEvent.offsetX,
+  //       offsetY: nativeEvent.offsetY,
+  //     };
+  //   }
+  // };
+
+  // insertEventBlock();
+  return data;
 };
 
 const clearCanvas = (
