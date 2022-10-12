@@ -9,11 +9,9 @@ import { RoundsProvider } from "./contexts/RoundContext";
 import WaitRoom from "./pages/WaitRoom";
 import { RoomProvider } from "./contexts/RoomContext";
 
-console.log(process.env.REACT_APP_ENV);
+console.log("Environment: ", process.env.REACT_APP_ENV);
 
 const App = () => {
-  // const [mousePosX, setMousePosX] = useState(null);
-  // const [mousePosY, setMousePosY] = useState(null);
   const [height, setHeight] = useState<number>(window.innerHeight);
   const [id, setId] = useState<string>("");
 

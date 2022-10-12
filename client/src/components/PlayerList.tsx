@@ -31,10 +31,6 @@ const PlayerList: FC<{ type: PlayerListTypes }> = ({ type }) => {
       setHighest(highestData);
       setLoading(false);
     });
-
-    // socket.on("leave_room", (id) => {
-    //   console.log(`${id} left the room`);
-    // });
   }, [socket]);
 
   const PlayerList = players.map((player) => (

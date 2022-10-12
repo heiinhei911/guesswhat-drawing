@@ -43,6 +43,7 @@ declare namespace Cypress {
     createNewRoom(): Chainable<void>;
     joinExistingRoom(roomId: string): Chainable<void>;
     startRound(): Chainable<void>;
+    leaveRoom(roomId: string): Chainable<void>;
   }
 }
 
@@ -72,4 +73,12 @@ Cypress.Commands.add("startRound", () => {
   cy.get("@tempRoomId").then((tempRoomId) => cy.createSocket(tempRoomId));
   cy.contains(/start game/i).click();
   cy.get("canvas", { timeout: 6000 }).should("be.visible");
+});
+
+Cypress.Commands.add("leaveRoom", (roomId: string) => {
+  cy.get("button")
+    .contains(/leave room/i)
+    .click();
+  cy.request(`http://localhost:3001/socket/leave?roomId=${roomId}`);
+  cy.contains("button", /join/i);
 });

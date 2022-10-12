@@ -26,7 +26,8 @@ const WaitRoom: FC<{ setId: Dispatch<SetStateAction<string>> }> = ({
   const { user } = useName();
   const navigate = useNavigate();
   const location = useLocation();
-  const { beginGame, endScreen } = useRounds();
+  const { beginGame, endScreen, setBeginGame, setCurrentRound, setRoundEnd } =
+    useRounds();
   const fromHome: boolean =
     (location.state as ILocationState)?.fromHome || false;
   const [roomChecked, setRoomChecked] = useState<boolean | null>(null);
@@ -66,6 +67,9 @@ const WaitRoom: FC<{ setId: Dispatch<SetStateAction<string>> }> = ({
       leaveRoom(socket, id);
       joinRoom(socket, LOBBY);
       navigate("/");
+      setRoundEnd(true);
+      setBeginGame(false);
+      setCurrentRound(0);
     }
   };
 
@@ -74,16 +78,18 @@ const WaitRoom: FC<{ setId: Dispatch<SetStateAction<string>> }> = ({
       <div className={styles.header}>
         <div className={styles.container}>
           <h1 className={styles.title}>Guess What</h1>
-          <div>
-            <h2>WaitRoom</h2>
-            <button
-              className={styles.button}
-              onClick={returnHome}
-              style={{ backgroundColor: "red" }}
-            >
-              Leave Room
-            </button>
-          </div>
+          {!endScreen && roomChecked && (
+            <div>
+              {!beginGame && <h2>WaitRoom</h2>}
+              <button
+                className={styles.button}
+                onClick={returnHome}
+                style={{ backgroundColor: "red" }}
+              >
+                Leave Room
+              </button>
+            </div>
+          )}
         </div>
       </div>
       {endScreen ? (

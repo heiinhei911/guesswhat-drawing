@@ -7,7 +7,7 @@
   position: relative;
 }
 
-.game-columns {
+.columns {
   @include var.flexRow;
   justify-content: space-between;
   align-items: flex-start;

@@ -11,12 +11,14 @@ import {
 import { IWordList, IOrderList } from "@backend/interfaces";
 import { useRoom } from "./RoomContext";
 import { useSocket } from "./SocketContext";
+import { useName } from "./NameContext";
 
 type RoundEndType = boolean | IRoundEnd;
 
 export interface IRoundEnd {
   type: string;
   user?: string;
+  username?: string;
 }
 
 interface IRoundContext {
@@ -42,7 +44,7 @@ interface IRoundContext {
   ) => void | Dispatch<SetStateAction<boolean>>;
   updateRoundsInfo: (rounds: number, duration: number) => void;
   word: IOrderList | IWordList;
-  turn: any;
+  turn: IOrderList | IWordList;
   isTurn: boolean;
 }
 
@@ -70,6 +72,7 @@ const useRounds = () => useContext(RoundsContext);
 const RoundsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const socket = useSocket();
   const { room, isCreator } = useRoom();
+  const { user } = useName();
   const [totalRounds, setTotalRounds] = useState<number>(0);
   const [roundDuration, setRoundDuration] = useState<number>(0);
   const [currentRound, setCurrentRound] = useState<number>(0);
@@ -86,7 +89,7 @@ const RoundsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     word: "",
     category: "",
   });
-  const [turn, setTurn] = useState<any>({
+  const [turn, setTurn] = useState<IOrderList | IWordList>({
     id: "",
     username: "",
   });
@@ -96,15 +99,38 @@ const RoundsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     socket.on("receive_start_rounds", (roundWordData) => {
       setWordsList(roundWordData.words);
       setTurnOrder(roundWordData.order);
-      // setUsedWords(roundWordData.usedWords);
     });
 
-    // socket.on("update_player_count", () => {
-    //   if (currentRound > 0 && isTurn) {
-    //     socket.emit("player_left", { room, user, type: "left" });
-    //   }
-    // });
-  }, [socket]);
+    socket.on("update_player_count", () => {
+      if (currentRound > 0 && beginGame && turn.id && turn.username) {
+        socket.emit("skip_player_turn", {
+          room,
+          user: isTurn ? turn.username : user,
+          id: isTurn ? turn.id : socket.id,
+          type: "left",
+          isTurn,
+        });
+      }
+    });
+
+    socket.on("last_player_end_game", () => {
+      if (beginGame) {
+        setCurrentRound(totalRounds);
+      }
+    });
+
+    socket.on("clean_words_turns", (id: string) => {
+      if (wordsList && turnOrder) {
+        for (let i = currentRound; i < turnOrder.length; i++) {
+          if (turnOrder[i].id === id) {
+            wordsList.splice(i, 1);
+            turnOrder.splice(i, 1);
+          }
+        }
+        setTotalRounds(turnOrder.length);
+      }
+    });
+  }, [socket, currentRound, isTurn, beginGame, turn, totalRounds]);
 
   useEffect(() => {
     if (roundEnd) {
@@ -114,12 +140,13 @@ const RoundsProvider: FC<{ children: ReactNode }> = ({ children }) => {
           setCurrentRound((prevRound) => prevRound + 1);
         }, 5000);
       } else {
-        socket.emit("send_calculate_score", room);
         // Game Ends
+        socket.emit("send_calculate_score", room);
         setTimeout(() => {
           setRoundEnd(true);
           setBeginGame(false);
           setEndScreen(true);
+          setCurrentRound(0);
         }, 5000);
       }
     }
@@ -133,7 +160,7 @@ const RoundsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [word, beginGame]);
 
-  // Next Round
+  // Set the word and turn for the next Round
   useEffect(() => {
     if (
       currentRound >= 1 &&
@@ -141,11 +168,8 @@ const RoundsProvider: FC<{ children: ReactNode }> = ({ children }) => {
       wordsList.length > 0 &&
       turnOrder.length > 0
     ) {
-      // socket.emit("send_start_rounds", { room, usedWords });
-      if (wordsList) {
-        setWord(wordsList[currentRound - 1]);
-        setTurn(turnOrder[currentRound - 1]);
-      }
+      setWord(wordsList[currentRound - 1]);
+      setTurn(turnOrder[currentRound - 1]);
     }
   }, [currentRound, wordsList, turnOrder]);
 

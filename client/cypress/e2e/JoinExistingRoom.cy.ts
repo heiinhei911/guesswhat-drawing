@@ -1,62 +1,29 @@
-// Initialize React and Node Server before running any test
+// Start React and Node Servers before running any tests
 
-const roomId = "testing123";
+describe("join an existing room and perform various actions inside waitroom", () => {
+  const roomId = "testing123";
 
-beforeEach(() => {
-  cy.visit("http://localhost:3000");
-});
-
-describe("create a room and perform actions inside waitroom", () => {
-  it("create a room", () => {
-    cy.createNewRoom();
-  });
-
-  it("create a room & leave the room", () => {
-    cy.createNewRoom();
-    cy.contains(/leave room/i).click();
-    cy.contains("button", /create/i);
-  });
-
-  it("create a room & send a message", () => {
-    cy.createNewRoom();
-    cy.get('input[placeholder="Type in your message..."]').type("hello");
-    cy.contains(/send/i).click();
-    cy.get(
-      "#root > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1) > div"
-    ).contains("hello");
-  });
-
-  it("create a room & leave", () => {
-    cy.createNewRoom();
-    cy.contains(/leave room/i).click();
-    cy.get('input[placeholder="Your name..."]');
-  });
-});
-
-describe("join an existing room and perform actions inside waitroom", () => {
   beforeEach(() => {
+    cy.visit("http://localhost:3000");
     cy.createSocket(roomId);
-  });
-
-  it("join an existing room", () => {
     cy.joinExistingRoom(roomId);
   });
 
-  it("join an existing room & send a message", () => {
-    cy.joinExistingRoom(roomId);
+  afterEach(() => {
+    cy.leaveRoom(roomId);
+  });
+
+  it("join an existing room", () => {});
+
+  it("join an existing room, send a message. Message should be displayed for all players in the room", () => {
     cy.request(`http://localhost:3001/socket/send_message?roomid=${roomId}`);
     cy.get(
       "#root > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1) > div"
     ).contains(/test message/i);
   });
-});
 
-describe("start a round & perform actions in game", () => {
-  beforeEach(() => {
-    cy.startRound();
+  it("join an existing room & wait for the creator to start the game", () => {
+    cy.request(`http://localhost:3001/socket/start_game?roomid=${roomId}`);
+    cy.contains(/Game is starting in/i);
   });
-
-  it("start a round", () => {});
-
-  it("start a round and take a wrong guess", () => {});
 });

@@ -74,14 +74,12 @@ const startDrawing = (
   id = ""
 ) => {
   const { x, y } = getClickCoords(e);
-  const sendScaleIndex = isSentDrawingData(e) ? e.scaleIndex : 1;
   const room = isSentDrawingData(e) ? e.room : id;
   // if (e.defaultPrevented === false) e.preventDefault();
   setIsDrawing(true);
   if (ctxRef.current) {
     ctxRef.current.beginPath();
     ctxRef.current.moveTo(x, y);
-    // ctxRef.current.moveTo(x * sendScaleIndex, y * sendScaleIndex);
   }
 
   if (send && !isSentDrawingData(e)) sendStartDrawing(e, socket, room);
@@ -118,11 +116,9 @@ const draw = (
 ) => {
   const { x, y } = getClickCoords(e);
   const room = isSentDrawingData(e) ? e.room : id;
-  const sendScaleIndex = isSentDrawingData(e) ? e.scaleIndex : 1;
   // if (e.defaultPrevented === false) e.preventDefault();
   if (ctxRef.current) {
     ctxRef.current.lineTo(x, y);
-    // ctxRef.current.lineTo(x * sendScaleIndex, y * sendScaleIndex);
     ctxRef.current.stroke();
   }
 
@@ -153,7 +149,6 @@ const sendFinishDrawing = (
   id: string
 ) => {
   const drawingData: IDrawingData = {
-    type: e.type,
     target: {
       offsetLeft: 0,
       offsetTop: 0,
@@ -198,13 +193,10 @@ const getClickCoords = (
 const getDrawingData = (
   e: TouchEvent<HTMLCanvasElement> | MouseEvent<HTMLCanvasElement>,
   id: string
-  // rect: IRectData
 ): IDrawingData => {
   const target = e.target as HTMLCanvasElement;
   const nativeEvent = e.nativeEvent;
   const data: IDrawingData = {
-    type: e.type,
-    // rect,
     target: {
       offsetLeft: target.offsetLeft,
       offsetTop: target.offsetTop,
@@ -222,7 +214,6 @@ const getDrawingData = (
         : { offsetX: nativeEvent.offsetX, offsetY: nativeEvent.offsetY },
     room: id,
     scaleIndex,
-    // canvasSize: e.currentTarget.offsetWidth,
   };
 
   // const insertEventBlock = () => {
@@ -239,7 +230,6 @@ const getDrawingData = (
   //   }
   // };
 
-  // insertEventBlock();
   return data;
 };
 

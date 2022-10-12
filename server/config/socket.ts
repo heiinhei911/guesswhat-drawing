@@ -10,8 +10,12 @@ const connectSocket = (
   io.on("connection", (socket: Socket) => {
     const getClients = (room: string) => io.sockets.adapter.rooms.get(room);
 
-    const removePlayerRoomScore = (room: string) => {
+    const removeRoomScoreFromPlayer = (room: string) => {
       delete socket.data[room];
+    };
+
+    const cleanWordTurnList = (room: string, id: string) => {
+      io.in(room).emit("clean_words_turns", id);
     };
 
     const randomNumberArray = async (
@@ -107,10 +111,14 @@ const connectSocket = (
         }
       }
 
+      // if (emit) {
       io.in(room).emit("get_room_clients", {
         total: clients?.size || 0,
         clients: clientsList,
       });
+      // } else {
+      //   io.in(room).emit("get_clients", clientsList);
+      // }
     };
 
     const setCreator = (room: string) => {
@@ -158,16 +166,16 @@ const connectSocket = (
     });
 
     socket.on("leave_room", (room: string) => {
-      // socket.to(room).emit("left_room");
-      socket.leave(room);
-      updatePlayerList(room);
+      if (room !== "lobby") {
+        updatePlayerList(room, true);
+        const clients = getClients(room);
+        if (clients) {
+          socket.emit("update_player_count", clients.size);
+        }
 
-      const clients = getClients(room);
-      if (clients) {
-        io.in(room).emit("update_player_count", clients.size);
+        removeRoomScoreFromPlayer(room);
       }
-
-      removePlayerRoomScore(room);
+      socket.leave(room);
       console.log(`User ${socket.id} left ${room}`);
     });
 
@@ -202,7 +210,6 @@ const connectSocket = (
 
         for (const clientSocket of sockets) {
           clientSocket.data[startRoundsData.room] = 0;
-          console.log(clientSocket.data);
         }
 
         io.in(startRoundsData.room).emit("receive_start_rounds", {
@@ -239,9 +246,34 @@ const connectSocket = (
       }
     );
 
-    socket.on("player_left", (playerData: interfaces.IPlayerData) => {
-      io.in(playerData.room).emit("end_of_round", playerData);
-    });
+    socket.on(
+      "skip_player_turn",
+      (skipPlayerData: interfaces.ISkipTurnData) => {
+        const clients = getClients(skipPlayerData.room);
+        const { isTurn, ...playerData } = skipPlayerData;
+
+        if (clients) {
+          if (clients.size <= 1) {
+            // Last player in the room
+            console.log("last player in the room, ending the game");
+            io.in(skipPlayerData.room).emit("last_player_end_game");
+            io.in(skipPlayerData.room).emit("end_of_round", {
+              ...playerData,
+              type: "last",
+            });
+          } else {
+            if (isTurn) {
+              // Skip the current turn
+              console.log(
+                `skipped a turn because player ${skipPlayerData.id} left`
+              );
+              io.in(skipPlayerData.room).emit("end_of_round", playerData);
+            }
+            cleanWordTurnList(skipPlayerData.room, skipPlayerData.id);
+          }
+        }
+      }
+    );
 
     socket.on("send_calculate_score", async (room: string) => {
       const calculatePlayerScore = async () => {
@@ -307,18 +339,18 @@ const connectSocket = (
 
     // Disconnecting ---------------------------------
     socket.on("disconnecting", (reason: string) => {
-      console.log(`${socket.id} is disconnecting. Reason: `, reason);
-
       for (const room of socket.rooms) {
         const clients = getClients(room);
         updatePlayerList(room, true);
 
         if (clients) {
-          io.in(room).emit("update_player_count", clients.size - 1);
+          socket.emit("update_player_count", clients.size - 1);
         }
 
-        removePlayerRoomScore(room);
+        removeRoomScoreFromPlayer(room);
       }
+
+      console.log(`${socket.id} is disconnecting. Reason: `, reason);
     });
 
     socket.on("disconnect", () => {

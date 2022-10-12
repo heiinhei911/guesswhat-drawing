@@ -14,6 +14,12 @@ socketRouter.get("/join", (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
+socketRouter.get("/leave", (req: Request, res: Response) => {
+  const roomId = req.query.roomid;
+  socket.emit("leave_room", roomId);
+  res.sendStatus(200);
+});
+
 socketRouter.get("/send_message", (req: Request, res: Response) => {
   const roomId = req.query.roomid;
   socket.emit("send_chat", {
@@ -23,6 +29,12 @@ socketRouter.get("/send_message", (req: Request, res: Response) => {
     time: "12:00:00AM",
     type: "chat",
   });
+  res.sendStatus(200);
+});
+
+socketRouter.get("/start_game", (req: Request, res: Response) => {
+  const roomId = req.query.roomid;
+  socket.emit("send_start_game", { room: roomId, rounds: 5, duration: 1 });
   res.sendStatus(200);
 });
 

@@ -19,20 +19,6 @@ interface IGameData extends IRoom {
   duration: number;
 }
 
-// interface DrawingInterface extends IRoom {
-//   e: {
-//     type: string;
-//     target?: {
-//       offsetLeft?: number;
-//       offsetTop?: number;
-//     };
-//     nativeEvent?:
-//       | { changedTouches?: [{ pageX?: number; pageY?: number }] }
-//       | { offsetX?: number; offsetY?: number };
-//   };
-//   scaleIndex: number;
-// }
-
 interface IMessageData extends IRoom {
   author: string;
   message: string;
@@ -45,7 +31,9 @@ interface IMatchedWordData extends IRoom {
   turn: string;
   type: string;
 }
+
 interface IPlayerData extends IRoom {
+  id: string;
   user: string;
   type: string;
 }
@@ -63,9 +51,11 @@ interface IOrderList {
 }
 
 interface IWordList {
+  id?: string;
   _id: string;
   word: string;
   category: string;
+  username?: string;
 }
 
 interface ICanvasData extends IRoom {
@@ -86,8 +76,6 @@ interface IGetClients {
 }
 
 interface IDrawingData extends IRoom {
-  type: string;
-  // rect: IRectData;
   target: {
     offsetLeft: number;
     offsetTop: number;
@@ -97,13 +85,16 @@ interface IDrawingData extends IRoom {
     offsetY?: number;
     changedTouches?: [{ pageX: number; pageY: number }];
   };
-  // touches?: [{ clientX: number; clientY: number }];
-  // nativeEvent?: {
-  //   offsetX: number;
-  //   offsetY: number;
-  // };
   scaleIndex: number;
-  // canvasSize: number;
+}
+
+interface IRoundData extends IRoom {
+  order: (IOrderList | IWordList)[];
+  words: (IOrderList | IWordList)[] | undefined;
+}
+
+interface ISkipTurnData extends IRoom, IPlayerData {
+  isTurn: boolean;
 }
 
 interface ClientToServerEvents {
@@ -118,7 +109,7 @@ interface ClientToServerEvents {
     totalRounds: number;
   }) => void;
   matched_word: (matchedWordData: IMatchedWordData) => void;
-  player_left: (playerData: IPlayerData) => void;
+  skip_player_turn: (skipPlayerData: ISkipTurnData) => void;
   send_calculate_score: (room: string) => void;
   send_startDrawing: (drawingData: IDrawingData) => void;
   send_drawing: (drawingData: IDrawingData) => void;
@@ -135,18 +126,16 @@ interface ServerToClientEvents {
     total: number;
     clients: IClientsList[];
   }) => void;
+  clean_words_turns: (id: string) => void;
   receive_creator: (creator: string) => void;
   room_exists: (exists: boolean) => void;
   update_player_count: (getClients: number | null) => void;
   left_room: () => void;
   receive_start_game: (gameData: IGameData) => void;
   receive_stop_game: () => void;
-  receive_start_rounds: (roundData: {
-    room: string;
-    order: (IOrderList | IWordList)[];
-    words: (IOrderList | IWordList)[] | undefined;
-  }) => void;
+  receive_start_rounds: (roundData: IRoundData) => void;
   end_of_round: (roundEndData: IPlayerData | IMatchedWordData) => void;
+  last_player_end_game: () => void;
   receive_calculate_score: (scoreData: IClientsList[]) => void;
   receive_startDrawing: (drawingData: IDrawingData) => void;
   receive_drawing: (drawingData: IDrawingData) => void;
@@ -155,11 +144,6 @@ interface ServerToClientEvents {
   receive_chat: (messageData: IMessageData) => void;
   receive_guess: (messageData: IMessageData) => void;
 }
-
-// interface SocketData<T,R> {
-//   name?: R;
-//   [roomID: string]: T;
-// }
 
 const getEnvVar = (name: string) => {
   const envVar: string = process.env[name] || "";
@@ -182,6 +166,8 @@ export {
   IClientsList,
   IOrderList,
   IWordList,
+  IRoundData,
+  ISkipTurnData,
   IGetClients,
   ClientToServerEvents,
   ServerToClientEvents,

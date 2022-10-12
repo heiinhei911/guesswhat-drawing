@@ -49,7 +49,11 @@ const Chat: FC<{ type: ChatTypes; check?: boolean }> = ({
   }, [messageList]);
 
   const checkMessage = () => {
-    if (word.word && message.toLowerCase() === word.word.toLowerCase()) {
+    if (
+      word.word &&
+      message.toLowerCase() === word.word.toLowerCase() &&
+      turn.id
+    ) {
       const matchedWordData = {
         room,
         user,
@@ -66,7 +70,7 @@ const Chat: FC<{ type: ChatTypes; check?: boolean }> = ({
     }
   }, [currentRound]);
 
-  const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
+  const sendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (message !== "") {
       const messageData = {
@@ -77,7 +81,7 @@ const Chat: FC<{ type: ChatTypes; check?: boolean }> = ({
         type,
       };
 
-      await socket.emit(
+      socket.emit(
         type === ChatTypes.guesses ? "send_guess" : "send_chat",
         messageData
       );

@@ -4,7 +4,7 @@ import Home from "../pages/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { act } from "react-dom/test-utils";
 
-// Unit Testing for 'Home' component
+// Unit testing for 'Home' component
 
 let nameInput: HTMLInputElement,
   roomIdInput: HTMLInputElement,
@@ -36,20 +36,20 @@ describe("initial render", () => {
     });
   });
 
-  test("renders empty name field", () => {
+  it("renders empty name field", () => {
     // Assert
     expect(nameInput).toHaveValue("");
   });
 
-  test("renders empty room ID field", () => {
+  it("renders empty room ID field", () => {
     expect(roomIdInput).toHaveValue("");
   });
 
-  test("renders 'Create' button", () => {
+  it("renders 'Create' button", () => {
     expect(createBtn).toBeEnabled();
   });
 
-  test("renders disabled 'Join' button", () => {
+  it("renders disabled 'Join' button", () => {
     expect(joinBtn).toBeDisabled();
   });
 });
@@ -81,7 +81,7 @@ describe("filling in 'RoomID' and/or 'name' fields should have different effects
     });
   });
 
-  test("joining with an empty 'name' field should throw an error", async () => {
+  it("joining with an empty 'name' field should throw an error", async () => {
     // Act
     userEvent.click(createBtn);
     await waitFor(() => {
@@ -90,7 +90,7 @@ describe("filling in 'RoomID' and/or 'name' fields should have different effects
     });
   });
 
-  test("filling out the Room ID should enable 'join' and disable 'create' buttons", async () => {
+  it("filling out the Room ID should enable 'join' and disable 'create' buttons", async () => {
     fireEvent.change(roomIdInput, { target: { value: "qwertyuiop" } });
     await waitFor(() => {
       expect(createBtn).toBeDisabled();
@@ -98,7 +98,7 @@ describe("filling in 'RoomID' and/or 'name' fields should have different effects
     });
   });
 
-  test("filling out a Room ID that doesn't exist with Name filled out should throw an error", async () => {
+  it("filling out a Room ID that doesn't exist with Name filled out should throw an error", async () => {
     fireEvent.change(roomIdInput, { target: { value: "qwertyuiop" } });
     fireEvent.change(nameInput, { target: { value: "Steve" } });
     userEvent.click(joinBtn);

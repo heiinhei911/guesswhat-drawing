@@ -13,8 +13,6 @@ import { ChatTypes, PlayerListTypes } from "../enums";
 
 const Game = () => {
   const socket = useSocket();
-  // const { user } = useName();
-  // const { room } = useRoom();
   const {
     totalRounds,
     currentRound,
@@ -23,39 +21,31 @@ const Game = () => {
     word,
     turn,
     isTurn,
+    beginGame,
   } = useRounds();
 
-  // useEffect(() => {
-  //   socket.on("room_exists", (roomExists) => {
-  //     if (roomExists) {
-  //       console.log("game - exists");
-  //       isNameEmpty(user);
-  //     } else {
-  //       console.log("game - room doesnt exists");
-  //     }
-  //     setLoading(false);
-  //   });
-
-  // }, [socket]);
-
   useEffect(() => {
-    socket.on("end_of_round", (matchedWordData) => {
-      console.log("end of round");
-      const roundEndObj: IRoundEnd = {
-        type: matchedWordData.type,
-        user: matchedWordData.user,
-      };
-      setRoundEnd(roundEndObj);
-      // setRoom(matchedWordData.room);
-      if (matchedWordData.type === "guessed") {
-        console.log(`${matchedWordData.user} guessed the word "${word.word}"`);
-      } else if (matchedWordData.type === "left") {
-        console.log(`${matchedWordData.user} left the room`);
-      } else {
-        console.log(`${matchedWordData.user} timed out`);
+    socket.on("end_of_round", (roundEndData) => {
+      if (beginGame && currentRound > 0) {
+        console.log("end of round");
+        const roundEndObj: IRoundEnd = {
+          type: roundEndData.type,
+          user: roundEndData.user,
+        };
+        setRoundEnd(roundEndObj);
+        if (roundEndData.type === "guessed") {
+          console.log(`${roundEndData.user} guessed the word "${word.word}"`);
+        } else if (
+          roundEndData.type === "left" ||
+          roundEndData.type === "last"
+        ) {
+          console.log(`${roundEndData.user} left the room`);
+        } else {
+          console.log(`${roundEndData.user} timed out`);
+        }
       }
     });
-  }, [socket, word]);
+  }, [socket, word, beginGame]);
 
   // useEffect(() => {
   //   console.log("currentround: ", currentRound);
@@ -73,7 +63,7 @@ const Game = () => {
     <CanvasProvider>
       <div className={styles.game}>
         <div className={styles.container}>
-          <div className={`${styles["game-columns"]} ${styles.head}`}>
+          <div className={`${styles.columns} ${styles.head}`}>
             <span>
               Round {currentRound} of {totalRounds}
             </span>
@@ -88,7 +78,7 @@ const Game = () => {
             )}
             <Timer />
           </div>
-          <div className={styles["game-columns"]}>
+          <div className={styles.columns}>
             <div className={styles.content}>
               <div className={styles["canvas-with-toolbar"]}>
                 <Canvas />
@@ -107,48 +97,21 @@ const Game = () => {
         <div className={styles.overlay}>
           <h2>
             {roundEnd.type === "guessed"
-              ? "Round Over!"
-              : roundEnd.type === "left"
-              ? "Player Left"
-              : "Time Out!"}
+              ? "Round's Over!"
+              : roundEnd.type === "left" || roundEnd.type === "last"
+              ? `${roundEnd.user} left the room.`
+              : "Time's Up!"}
           </h2>
-          {roundEnd.type === "guessed" && (
-            <p>
-              {roundEnd.user} guessed the word "{word.word}"
-            </p>
-          )}
+          <p>
+            {roundEnd.type === "guessed"
+              ? `${roundEnd.user} guessed the word "${word.word}"`
+              : roundEnd.type === "last"
+              ? "You are the only person in the room. Game Over!"
+              : roundEnd.type === "left" && "Skipping to the next person"}
+          </p>
         </div>
       )}
     </CanvasProvider>
   );
-  // return loading ? (
-  //   <div className={styles["game-loading"]}>Loading</div>
-  // ) : !roomExists ? (
-  //   <div className="">Room Doesn't Exist</div>
-  // ) : user ? (
-  //   <CanvasProvider>
-  //     <div>
-  //       <h1>Game</h1>
-  //       <button onClick={() => leaveRoom(socket, id)}>Leave Room</button>
-  //       <div className={styles["canvas-with-toolbar"]}>
-  //         <Canvas id={id} />
-  //         <CanvasToolbar />
-  //       </div>
-  //       <div className={styles["game-chats"]}>
-  //         <Chat room={id} user={uuid()} />
-  //         {/* <Chat room={id} user={uuid()} /> */}
-  //       </div>
-  //     </div>
-  //   </CanvasProvider>
-  // ) : (
-  //   <div className={styles["game-name-screen"]}>
-  //     <h1>Live Drawing</h1>
-  //     <Name
-  //       isEmpty={(user) => isNameEmpty(user)}
-  //       setGameUser={(user) => setUser(user)}
-  //       btn={true}
-  //     />
-  //   </div>
-  // );
 };
 export default Game;
