@@ -5,8 +5,8 @@ const socketRouter = express.Router();
 const socket: Socket = io("http://localhost:3001");
 const testUser = "Test User";
 
-// @route GET api/words
-// @description Get all words
+// @route GET /join
+// @description Join a room with a given room ID
 // @access Public
 socketRouter.get("/join", (req: Request, res: Response) => {
   const roomId = req.query.roomid;
@@ -14,12 +14,18 @@ socketRouter.get("/join", (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
+// @route GET /leave
+// @description Leave the room that a user is currently in
+// @access Public
 socketRouter.get("/leave", (req: Request, res: Response) => {
   const roomId = req.query.roomid;
   socket.emit("leave_room", roomId);
   res.sendStatus(200);
 });
 
+// @route GET /send_message
+// @description send a test message in a room
+// @access Public
 socketRouter.get("/send_message", (req: Request, res: Response) => {
   const roomId = req.query.roomid;
   socket.emit("send_chat", {
@@ -32,6 +38,9 @@ socketRouter.get("/send_message", (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
+// @route GET /start_game
+// @description start a game in a room
+// @access Public
 socketRouter.get("/start_game", (req: Request, res: Response) => {
   const roomId = req.query.roomid;
   socket.emit("send_start_game", { room: roomId, rounds: 5, duration: 1 });

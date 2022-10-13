@@ -20,7 +20,7 @@ const port = process.env.PORT || 3001;
 app.get("/", (req: Request, res: Response) => res.send("Hello world"));
 
 app.use("/api/words", router);
-app.use("/socket", socketRouter); // for testing purposes only
+app.use("/socket", socketRouter); // for testing only
 
 server.listen(port, () => {
   console.log(`Server running on ${port}`);
@@ -28,12 +28,16 @@ server.listen(port, () => {
 
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: {
-    origin: "*",
-    // process.env.ENV === "PRODUCTION"
-    //   ? "https://guesswhat-drawing.herokuapp.com/*"
-    //   : "http://100.65.192.240:3000",
+    // origin: "*",
+    origin:
+      process.env.ENV === "PRODUCTION"
+        ? [
+            "https://guesswhat-drawing.herokuapp.com/*",
+            "https://guesswhat-drawing.netlify.app/*",
+          ]
+        : "http://localhost:3000",
     methods: ["GET", "POST"],
-    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
+    // allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
     // credentials: true,
   },
 });
