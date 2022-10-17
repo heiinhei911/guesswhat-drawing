@@ -34,20 +34,22 @@ describe("the countdown timer should start/stop for all other players when the c
     client.close();
   });
 
-  it("start countdown timer when the creators starts the game", (done) => {
+  it("start countdown timer when the creator starts the game", (done) => {
     const gameData: IGameData = {
       room: roomId,
       rounds: 2,
       duration: 1,
     };
-    client.on("receive_start_game", async () => {
+    client.on("receive_start_game", async (gameData: IGameData) => {
       await waitFor(() => {
-        expect(screen.findByText(/gew/i)).toBeInTheDocument();
+        expect(gameData.rounds).toBe(2);
+        expect(gameData.duration).toBe(1);
         done();
       });
     });
     socket.emit("receive_start_game", gameData);
   });
+
   //   it("renders number of rounds input", async () => {
   //     // Assert
   //     await waitFor(() => {

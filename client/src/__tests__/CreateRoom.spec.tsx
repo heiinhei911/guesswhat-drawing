@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import App from "../App";
 import { act } from "react-dom/test-utils";
 
-describe("Creating and Joining a room", () => {
+describe("Creating a room", () => {
   // let mockEmitter = jest.fn();
   // jest.mock("socket.io-client", () => {
   //   return jest.fn(() => ({
@@ -35,9 +35,8 @@ describe("Creating and Joining a room", () => {
       })
     );
     await waitFor(() => {
-      expect(screen.getByText(/waitroom/i)).toBeInTheDocument();
-
       setTimeout(() => {
+        expect(screen.findByText(/waitroom/i)).toBeInTheDocument();
         expect(screen.findAllByRole("listitem")).toBe(1);
       }, 1000);
     });
