@@ -35,7 +35,7 @@ input {
   margin: 0.2rem auto !important;
 }
 
-.toolbar-stroke-size {
+.stroke-size {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -53,7 +53,7 @@ input {
   }
 }
 
-.stroke-size-display-container {
+.display-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -69,14 +69,14 @@ input {
   //   }
 }
 
-.stroke-size-display {
+.display {
   //   background-color: black;
   border-radius: 50%;
   //   width: 0.5rem;
   //   height: 0.5rem;
 }
 
-.stroke-size-slider {
+.slider {
   -webkit-appearance: none;
   appearance: none;
   background: transparent;

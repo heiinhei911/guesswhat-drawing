@@ -11,10 +11,10 @@ const StrokeSize = () => {
   };
 
   return (
-    <span className={styles["toolbar-stroke-size"]}>
-      <span className={styles["stroke-size-display-container"]}>
+    <span className={styles["stroke-size"]} data-testid="stroke-size">
+      <span className={styles["display-container"]}>
         <span
-          className={styles["stroke-size-display"]}
+          className={styles.display}
           style={{
             width: `${strokeSize[1]}rem`,
             height: `${strokeSize[1]}rem`,
@@ -23,7 +23,7 @@ const StrokeSize = () => {
         />
       </span>
       <input
-        className={styles["stroke-size-slider"]}
+        className={styles.slider}
         type="range"
         min="1"
         max="8"

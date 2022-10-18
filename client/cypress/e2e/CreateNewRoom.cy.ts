@@ -14,7 +14,7 @@ describe("create a room and perform various actions inside waitroom", () => {
   });
 
   it("create a room & it should ask the creator to invite more people", () => {
-    cy.contains(/invite one more player to start the game!/i);
+    cy.contains(/invite at least one more player to start the game!/i);
   });
 
   it("create a room, let another player joins the room, only then the creator is allowed to start the game", () => {
@@ -52,5 +52,19 @@ describe("create a room and perform various actions inside waitroom", () => {
 
     cy.get("[data-testid='duration-rounds']").type("{selectall}").type("6");
     cy.contains(/duration must be between 1 and 5 minutes/i);
+  });
+
+  it("start a game", () => {
+    cy.get("button")
+      .contains(/start game/i)
+      .should("be.disabled");
+    cy.location("pathname").invoke("split", "/").its(1).as("tempRoomId");
+    cy.get("@tempRoomId").then((tempRoomId) => cy.createSocket(tempRoomId));
+    cy.get("button")
+      .contains(/start game/i)
+      .click()
+      .should("be.enabled");
+    cy.contains(/game is starting in /i);
+    cy.get("canvas", { timeout: 6000 }).should("be.visible");
   });
 });

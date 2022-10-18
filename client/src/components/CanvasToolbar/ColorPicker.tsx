@@ -4,7 +4,13 @@ import styles from "./ColorPicker.module.scss";
 import { nanoid } from "nanoid";
 
 const Color: FC<{ color: string }> = ({ color }) => {
-  return <span className={styles.tile} style={{ backgroundColor: color }} />;
+  return (
+    <span
+      className={styles.tile}
+      style={{ backgroundColor: color }}
+      data-testid="color-picker"
+    />
+  );
 };
 
 const ColorPicker = () => {

@@ -8,6 +8,7 @@ const config: Config = {
   testEnvironment: "jsdom",
   verbose: true,
   roots: ["<rootDir>/src"],
+  setupFiles: ["jest-canvas-mock"],
   setupFilesAfterEnv: ["<rootDir>/jest.env.ts"],
   transform: {
     "^.+\\.tsx?$": "ts-jest",

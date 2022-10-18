@@ -28,12 +28,13 @@ socketRouter.get("/leave", (req: Request, res: Response) => {
 // @access Public
 socketRouter.get("/send_message", (req: Request, res: Response) => {
   const roomId = req.query.roomid;
+  const type = req.query.type;
   socket.emit("send_chat", {
     room: roomId,
     author: testUser,
     message: "Test Message",
     time: "12:00:00AM",
-    type: "chat",
+    type,
   });
   res.sendStatus(200);
 });
@@ -44,6 +45,21 @@ socketRouter.get("/send_message", (req: Request, res: Response) => {
 socketRouter.get("/start_game", (req: Request, res: Response) => {
   const roomId = req.query.roomid;
   socket.emit("send_start_game", { room: roomId, rounds: 5, duration: 1 });
+  res.sendStatus(200);
+});
+
+// @route GET /skip
+// @description skip a turn in a room
+// @access Public
+socketRouter.get("/skip", (req: Request, res: Response) => {
+  const roomId = req.query.roomid;
+  socket.emit("skip_player_turn", {
+    room: roomId,
+    user: testUser,
+    id: socket.id,
+    type: "test",
+    isTurn: true,
+  });
   res.sendStatus(200);
 });
 

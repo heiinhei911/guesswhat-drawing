@@ -42,8 +42,10 @@ declare namespace Cypress {
     createSocket(roomId: string | JQuery<HTMLElement>): Chainable<void>;
     createNewRoom(): Chainable<void>;
     joinExistingRoom(roomId: string): Chainable<void>;
-    startRound(): Chainable<void>;
+    startRound(): Chainable<JQuery<HTMLElement>>;
     leaveRoom(roomId: string): Chainable<void>;
+    skipTurn(roomId: string): Chainable<void>;
+    sendMessage(roomId: string, type: string): Chainable<void>;
   }
 }
 
@@ -68,11 +70,15 @@ Cypress.Commands.add("joinExistingRoom", (roomId: string) => {
 });
 
 Cypress.Commands.add("startRound", () => {
+  // let tempRoomId: JQuery<HTMLElement> | undefined;
   cy.createNewRoom();
   cy.location("pathname").invoke("split", "/").its(1).as("tempRoomId");
-  cy.get("@tempRoomId").then((tempRoomId) => cy.createSocket(tempRoomId));
+  cy.get("@tempRoomId").then((roomId) => {
+    cy.createSocket(roomId);
+  });
   cy.contains(/start game/i).click();
-  cy.get("canvas", { timeout: 6000 }).should("be.visible");
+  cy.get("canvas", { timeout: 5500 }).should("be.visible");
+  return cy.get("@tempRoomId");
 });
 
 Cypress.Commands.add("leaveRoom", (roomId: string) => {
@@ -81,4 +87,14 @@ Cypress.Commands.add("leaveRoom", (roomId: string) => {
     .click();
   cy.request(`http://localhost:3001/socket/leave?roomId=${roomId}`);
   cy.contains("button", /join/i);
+});
+
+Cypress.Commands.add("skipTurn", (roomId: string) => {
+  cy.request(`http://localhost:3001/socket/skip?roomId=${roomId}`);
+});
+
+Cypress.Commands.add("sendMessage", (roomId: string, type: string) => {
+  cy.request(
+    `http://localhost:3001/socket/send_message?roomId=${roomId}&type=${type}`
+  );
 });

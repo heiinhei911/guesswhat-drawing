@@ -213,6 +213,7 @@ const Canvas = () => {
         }}
         // width={canvasSize}
         // height={canvasSize}
+        data-testid="canvas"
       >
         Your browser does not support the HTML canvas tag.
       </canvas>

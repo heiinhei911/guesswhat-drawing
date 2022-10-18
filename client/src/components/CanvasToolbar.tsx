@@ -26,6 +26,7 @@ const CanvasToolbar = () => {
         className={styles.icon}
         onClick={() => toggleMode("pen")}
         style={{ backgroundColor: mode === "pen" ? "lightblue" : "whitesmoke" }}
+        data-testid="pen"
       >
         <ImPencil2 />
       </li>
@@ -35,10 +36,15 @@ const CanvasToolbar = () => {
         style={{
           backgroundColor: mode === "eraser" ? "lightblue" : "whitesmoke",
         }}
+        data-testid="eraser"
       >
         <BsFillEraserFill />
       </li>
-      <li className={styles.icon} onClick={() => setClear(true)}>
+      <li
+        className={styles.icon}
+        onClick={() => setClear(true)}
+        data-testid="clear"
+      >
         <AiFillDelete color="#C2181A" size="1.5rem" />
       </li>
     </ul>

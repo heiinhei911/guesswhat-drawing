@@ -68,11 +68,11 @@ const Game = () => {
               Round {currentRound} of {totalRounds}
             </span>
             {isTurn ? (
-              <div>
+              <div data-testid="turn">
                 Your word: <span className={styles.word}>{word.word}</span>
               </div>
             ) : (
-              <div>
+              <div data-testid="turn">
                 <span className={styles.word}>{turn.username}</span>'s turn
               </div>
             )}

@@ -7,7 +7,7 @@ import { v4 as uuid } from "uuid";
 const Line: FC<{ style: string; color?: string }> = ({ style, color }) => {
   return (
     <hr
-      className={styles["line-style-display"]}
+      className={styles.display}
       style={{
         borderStyle: style ? style : "solid",
         color: color ? color : "#000000",
@@ -30,8 +30,8 @@ const LineStyle = () => {
   };
 
   return (
-    <span className={styles["toolbar-line-style-container"]}>
-      <span className={styles["toolbar-line-style"]}>
+    <span className={styles.container} data-testid="line-style">
+      <span className={styles["line-style"]}>
         <Line style={lineStyle} color={color} />
         <span className={styles["style-arrow"]} onClick={toggleLineMenu}>
           <MdArrowDropDown

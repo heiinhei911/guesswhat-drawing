@@ -16,7 +16,9 @@ describe("join an existing room and perform various actions inside waitroom", ()
   it("join an existing room", () => {});
 
   it("join an existing room, send a message. Message should be displayed for all players in the room", () => {
-    cy.request(`http://localhost:3001/socket/send_message?roomid=${roomId}`);
+    cy.request(
+      `http://localhost:3001/socket/send_message?roomid=${roomId}&type=chat`
+    );
     cy.get(
       "#root > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1) > div"
     ).contains(/test message/i);

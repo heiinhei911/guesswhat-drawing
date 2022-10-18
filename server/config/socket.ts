@@ -251,9 +251,8 @@ const connectSocket = (
       (skipPlayerData: interfaces.ISkipTurnData) => {
         const clients = getClients(skipPlayerData.room);
         const { isTurn, ...playerData } = skipPlayerData;
-
-        if (clients) {
-          if (clients.size <= 1) {
+        if (clients || skipPlayerData.type === "test") {
+          if (clients && clients.size <= 1) {
             // Last player in the room
             console.log("last player in the room, ending the game");
             io.in(skipPlayerData.room).emit("last_player_end_game");

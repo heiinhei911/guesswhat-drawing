@@ -131,7 +131,9 @@ const Chat: FC<{ type: ChatTypes; check?: boolean }> = ({
       <form className={styles["chat-input"]} onSubmit={(e) => sendMessage(e)}>
         <input
           type="text"
-          placeholder="Type in your message..."
+          placeholder={`Type in your ${
+            type === ChatTypes.guesses ? "guesses" : "message"
+          }...`}
           value={message}
           disabled={check && isTurn}
           onChange={(e) => setMessage(e.target.value)}

@@ -1,7 +1,7 @@
-.toolbar-line-style-container {
+.container {
   position: relative;
 }
-.toolbar-line-style {
+.line-style {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -18,7 +18,7 @@
   }
 }
 
-.line-style-display {
+.display {
   width: 50px;
   height: 5px;
   color: white;
@@ -47,7 +47,7 @@
   border-radius: 5px;
   position: absolute;
   padding: 0.2rem 0.5rem;
-  width: 103%;
+  width: 100%;
   z-index: 25;
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
