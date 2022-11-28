@@ -7,7 +7,7 @@ import {
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   process.env.REACT_APP_ENV === "PRODUCTION"
-    ? "https://guesswhat-drawing.herokuapp.com"
+    ? "https://guesswhat-drawing.onrender.com"
     : "http://192.168.68.112:3001",
   {
     // withCredentials: true,
