@@ -31,7 +31,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
     // origin: "*",
     origin:
       process.env.ENV === "PRODUCTION"
-        ? ["https://guesswhat-drawing.onrender.com"]
+        ? ["https://guesswhat-drawing.netlify.app"]
         : ["http://localhost:3000", "http://192.168.68.112:3000"],
     methods: ["GET", "POST"],
     // allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
