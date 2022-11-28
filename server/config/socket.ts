@@ -76,7 +76,7 @@ const connectSocket = (
       try {
         const res = await axios.get(
           process.env.ENV === "PRODUCTION"
-            ? "https://guesswhat-drawing.herokuapp.com/api/words"
+            ? "https://guesswhat-drawing.onrender.com/api/words"
             : "http://192.168.68.112:3001/api/words"
         );
         const allWords = res.data;
